@@ -169,7 +169,10 @@ fish survival and decreased fish harvest should be highlighted the same
 way), and (c) round the values of some cells before comparing, as our
 numerical solvers often produced values that are different at the
 seventh or eighth decimal place, and we don’t want to highlight changes
-of less than a tenth of a fish.
+of less than a tenth of a fish. This requires some additional framework
+that is not easilyi addressed in `excel_diff`. (We implemented our
+comparison in the `tamm_diff` function in the `TAMMsupport` package,
+<https://github.com/cbedwards-dfw/TAMMsupport>).
 
 For writing your own functions, it may be useful to use `excel_diff` as
 a starting template. Use `print(excel_diff)` to view the underlying
