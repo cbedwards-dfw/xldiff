@@ -1,11 +1,22 @@
 Package: xldiff
-Title: What the Package Does (One Line, Title Case)
+Title: Compare excel sheets
 Version: 0.0.0.9000
 Authors@R: 
     person("Collin", "Edwards", , "Collin.Edwards@dfw.wa.gov", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-4937-5159"))
-Description: What the package does (one paragraph).
+Description: `xldiff` provides tools to compare excel sheets, broadly inspired by "diff"-type functions. Provided functions can read sheets of two excel files and produce a third file that highlights cells that have changed. In the case of numeric changes, the direction of change is highlighted. These tools do not account for  structural changes in the sheets (e.g., the addition of a column), but are useful in tracking changed values in tables or parameter files. Utility functions developed to streamline formatting output files are also more broadly useful in programmatically formatting excel files using openxlsx.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+Imports: 
+    cli,
+    dplyr,
+    methods,
+    openxlsx,
+    purrr,
+    readxl,
+    rlang
