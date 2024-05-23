@@ -59,6 +59,15 @@
 
 
 excel_diff = function(file.1, file.2, results.name, sheet.name, extra_format_fun = NULL, ...){
+
+  if(!all(grepl(".xlsx$", c(file.1, file.2, results.name)))){
+    cli::cli_abort("`file.1`, `file.2`, and `results.name` must end in `.xlsx`.")
+  }
+  if(!is.null(extra_format_fun) & !is.function(extra_format_fun)){
+    cli::cli_abort("If provided, `extra_format_fun` must be a function.")
+  }
+
+
   f1 = readxl::read_excel(file.1, sheet = sheet.name, col_names = FALSE)
   f2 = readxl::read_excel(file.2, sheet = sheet.name, col_names = FALSE)
 
