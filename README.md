@@ -112,7 +112,7 @@ library(openxlsx)
 format_fun = function(wb, sheet){
   ## add bold and increased size for the first two rows.
   addStyle(wb, sheet,
-                     style = openxlsx::createStyle(fontSize = 12, textDecoration = "Bold"),
+                     style = createStyle(fontSize = 12, textDecoration = "Bold"),
                      rows = 1, cols = 1:8, gridExpand = TRUE,
                      stack = TRUE)
   ## add thin inner cell borders
@@ -154,9 +154,54 @@ excel_diff(file.1 = "example-penguins-1.xlsx",
   takes an excel cell range (e.g. “B2:H6”) and returns a dataframe with
   the rows and columns of each cell in that range. This can then be fed
   into the `row` and `col` arguments of `openxlsx` functions.
+- UPDATE: `xldiff` now includes `cell_stylize()`, which is a helper
+  function that applies `addStyle` to cells based on excel cell range
+  specifications! See below. This streamlines the process of
+  transcribing excel formatting into code.
 - The cell highlighting for changed cells is added *after* the custom
-  formatting, so setting foreground color to blocks for cells will not
-  interfere with this highlight.
+  formatting, so setting foreground color (e.g., with `cell_stylize()`)
+  will not interfere with this highlight.
+
+### Using `cells_stylize()`
+
+In the example above, we increased font size and added bolding using
+`addStyle`. To do so, we used the following code:
+
+``` r
+ addStyle(wb, sheet,
+                     style = createStyle(fontSize = 12, textDecoration = "Bold"),
+                     rows = 1, cols = 1:8, gridExpand = TRUE,
+                     stack = TRUE)
+```
+
+Here we specified the cells to change with the `rows` and `cols`
+arguments. In some applications, we may be looking at multiple chunks of
+cells that all need the same formatting. For example, in the
+`TAMMsupport` package, we needed to add foreground shading to more than
+than thirty separate rectangular sections of a worksheet. With
+`addStyle` we would either need a separate `addStyle` call for each
+section, or we would need to work out something clever to specify the
+rows and columns.
+
+`cells_stylize()` simplifies this process by using the `block.ranges`
+argument to specify cells instead of `rows` and `cols`. `block.ranges`
+takes a character vector (or single character string) in which each
+entry is an excel-style cell address or range of address
+(e.g. `c("A1", "B2:D5")`). It otherwise behaves the same as addStyle,
+except that it does not take a `gridExpand` argument, as that no longer
+makes sense. so to replicate the `addStyle` call above, we would use
+
+``` r
+ cells_stylize(wb, sheet,
+                     style = createStyle(fontSize = 12, textDecoration = "Bold"),
+                     block.ranges = c("A1:H1"),
+                     stack = TRUE)
+```
+
+In this simple case, it’s easy enough to use `addStyle`, but
+`cells_stylize` scales well when adding styles to multiple regions, and
+because it uses excel-style ranges, it’s much easier to walk through an
+excel file and transcribe formatting.
 
 ## Advanced use
 

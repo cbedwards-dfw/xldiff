@@ -11,7 +11,7 @@ cells_stylize(wb, sheet, style, block.ranges, stack = TRUE)
 
 \item{sheet}{character corresponding to sheet name of openxlsx workbook object \code{wb}.}
 
-\item{style}{\code{openxlsx} cell style, created with \code{openxlsx::createStyle()}}
+\item{style}{\code{openxlsx} cell style, created with \code{openxlsx::createStyle()}. This can include text size, bolding or italics, text wrapping, foreground color, text color, etc. See \code{?openxlsx::createStyle} for details.}
 
 \item{block.ranges}{One or more cell ranges specified in excel format (e.g. \verb{c("A1:D5, "B6", "A8:D8")})}
 
