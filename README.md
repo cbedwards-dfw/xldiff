@@ -6,13 +6,13 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of xldiff is to facilitate comparing excel sheets for changes,
-inspired by `diff` tools. `xldiff` was originally developed to help
-compare inputs and outputs for different runs of the FRAM model, which
-stores both inputs and outputs in excel files. However, this can be used
-more broadly to compare different files with the same structure, for
-example monthly reports summarizing survey information, service use, or
-finances.
+The goal of xldiff is to facilitate comparing excel sheets to look for
+changes, inspired by `diff` tools. `xldiff` was originally developed to
+help compare inputs and outputs for different runs of the FRAM salmon
+model, which stores both inputs and outputs in excel files. However, the
+comparison tools here can be used more broadly to compare different
+files with the same structure, for example monthly reports summarizing
+survey information, service use, or finances.
 
 ## Installation
 
@@ -30,10 +30,10 @@ remotes::install_github("cbedwards-dfw/xldiff")
 
 We can carry out simple comparisons of excel files with the
 `excel_diff()` function. To begin with, we must have two excel sheets
-that are generally similar, but in which some number of cells have
-changed. To walk through our example, we first create two excel files
-that differ in a few cells. Here we use the first 20 rows of the
-`penguins` data in the `palmerpenguins` package
+that are generally similar, but for which some cells have differing
+values. To walk through our example, we first must create two such excel
+sheets. Here we use the first 20 rows of the `penguins` data in the
+`palmerpenguins` package
 (<https://allisonhorst.github.io/palmerpenguins/>).
 
 ``` r
@@ -80,15 +80,15 @@ This produces an excel file that shows and highlights changes in cells.
 
 We already have the key results from `xldiff`: an excel file that
 identifies changed cells and lists the values of the first file and the
-second file. However, aside from highlighting cells with changes, the
-rest of the document lacks formatting. Particularly with more complex
-spreadsheets (e.g. the FRAM input and outputs this tool was developed
-for), it can be easier to contextualize changes if the “diff” file has
-formatting. `excel_diff()` supports this with the optional argument
-`extra_format_fun`. `xldiff` uses the `openxlsx` package to handle excel
-file formatting, and `extra_format_fun` should be a user-created
-function which applies excel formatting using the functions of
-`openxlsx` (commonly `createStyle`, `addStyle`, `setColWidths` and
+second file. However, aside from the highlighting to flag changed cells,
+the rest of the document lacks formatting. Particularly with more
+complex spreadsheets (e.g. the FRAM input and outputs that `xldiff` was
+developed for), it can be easier to contextualize changes if the “diff”
+file has formatting. `excel_diff()` supports this with the optional
+argument `extra_format_fun`. `xldiff` uses the `openxlsx` package to
+handle excel file formatting, and `extra_format_fun` should be a
+user-created function which applies excel formatting using the functions
+of `openxlsx` (commonly `createStyle`, `addStyle`, `setColWidths` and
 `setRowHeights`). The first two arguments of `extra_format_fun` must be
 the workbook object and sheet name that any contained `openxlsx`
 functions make changes to.
@@ -157,7 +157,7 @@ excel_diff(file.1 = "example-penguins-1.xlsx",
 - UPDATE: `xldiff` now includes `cell_stylize()`, which is a helper
   function that applies `addStyle` to cells based on excel cell range
   specifications! See below. This streamlines the process of
-  transcribing excel formatting into code.
+  transcribing excel formatting into R code.
 - The cell highlighting for changed cells is added *after* the custom
   formatting, so setting foreground color (e.g., with `cell_stylize()`)
   will not interfere with this highlight.
@@ -200,24 +200,24 @@ makes sense. so to replicate the `addStyle` call above, we would use
 
 In this simple case, it’s easy enough to use `addStyle`, but
 `cells_stylize` scales well when adding styles to multiple regions, and
-because it uses excel-style ranges, it’s much easier to walk through an
-excel file and transcribe formatting.
+because it uses excel-style ranges, it’s much easier to write code
+directly based on an excel file.
 
 ## Advanced use
 
 For more complicated uses, `sheet_comp()` and `add_changed_formats()`
 provide the building blocks for writing custom scripts or functions. For
-example, when comparing excel files associated withe the FRAM model, we
+example, when comparing excel files associated with the FRAM model, we
 (a) wanted to produce a single file comparing three scripts, (b) invert
 the colors for numerical changes for some ranges of cells (increased
 fish survival and decreased fish harvest should be highlighted the same
 way), and (c) round the values of some cells before comparing, as our
 numerical solvers often produced values that are different at the
 seventh or eighth decimal place, and we don’t want to highlight changes
-of less than a tenth of a fish. This requires some additional framework
-that is not easilyi addressed in `excel_diff`. (We implemented our
+of less than a tenth of a fish. This required some additional framework
+that was not easily addressed in `excel_diff`, and we implemented our
 comparison in the `tamm_diff` function in the `TAMMsupport` package,
-<https://github.com/cbedwards-dfw/TAMMsupport>).
+<https://github.com/cbedwards-dfw/TAMMsupport>.
 
 For writing your own functions, it may be useful to use `excel_diff` as
 a starting template. Use `print(excel_diff)` to view the underlying
