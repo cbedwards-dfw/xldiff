@@ -14,9 +14,20 @@ comparison tools here can be used more broadly to compare different
 files with the same structure, for example monthly reports summarizing
 survey information, service use, or finances.
 
+xldiff is part of the [FRAMverse
+R-Universe](https://framverse.r-universe.dev/packages)
+
 ## Installation
 
-You can install the development version of xldiff like so:
+You can install the development version of xldiff from R-Universe like
+so:
+
+``` r
+install.packages("xldiff", repos = "https://framverse.r-universe.dev")
+```
+
+If you have Rtools and `{remotes}` or `{pak}` installed, you can install
+from source code like so:
 
 ``` r
 remotes::install_github("cbedwards-dfw/xldiff")

@@ -20,9 +20,17 @@ knitr::opts_chunk$set(
 
 The goal of xldiff is to facilitate comparing excel sheets to look for changes, inspired by `diff` tools. `xldiff` was originally developed to help compare inputs and outputs for different runs of the FRAM salmon model, which stores both inputs and outputs in excel files. However, the comparison tools here can be used more broadly to compare different files with the same structure, for example monthly reports summarizing survey information, service use, or finances.
 
+xldiff is part of the [FRAMverse R-Universe](https://framverse.r-universe.dev/packages)
+
 ## Installation
 
-You can install the development version of xldiff like so:
+You can install the development version of xldiff from R-Universe like so:
+
+``` r
+install.packages("xldiff", repos = "https://framverse.r-universe.dev")
+```
+
+If you have Rtools and `{remotes}` or `{pak}` installed, you can install from source code like so:
 
 ``` r
 remotes::install_github("cbedwards-dfw/xldiff")
