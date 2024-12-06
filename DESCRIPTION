@@ -20,3 +20,4 @@ Imports:
     purrr,
     readxl,
     rlang
+URL: https://framverse.r-universe.dev/xldiff, https://github.com/cbedwards-dfw/xldiff
