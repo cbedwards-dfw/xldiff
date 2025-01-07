@@ -63,6 +63,16 @@ sheet_comp = function(t1, t2, digits.signif = 4){
   mat.numbers.percents = suppressWarnings(!is.na(as.numeric(gsub("%$", "", mat1))) &
                                             !is.na(as.numeric(gsub("%$", "", mat2))))
   mat.numbers.percents = mat.numbers.percents & !mat.numbers
+
+  ## for numeric entries, update mat.diff with rounded comparison
+  mat.diff[mat.numbers] = round(as.numeric(mat1[mat.numbers]), digits.signif) !=
+    round(as.numeric(mat2[mat.numbers]), digits.signif)
+
+  mat.diff[mat.numbers.percents] = suppressWarnings(
+    round(as.numeric(gsub("%$", "", mat1)[mat.numbers.percents]), digits.signif) !=
+      round(as.numeric(gsub("%$", "", mat2)[mat.numbers.percents]), digits.signif)
+  )
+
   ## find indices for changes that are text and are numeric
   ind.diff.text = which(mat.diff & !mat.numbers)
   ind.diff.num = which(mat.diff & mat.numbers)

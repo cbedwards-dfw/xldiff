@@ -9,7 +9,7 @@
 #'
 #' @param file.1 Filename (including path) for first file to compare
 #' @param file.2 Filename (including path) for second file to compare
-#' @param results.name Name (including path) for fille to save comparison to. Must end in ".xlsx"
+#' @param results.name Name (including path) for file to save comparison to. Must end in ".xlsx"
 #' @param sheet.name character string of sheet to compare (must be present in both files)
 #' @param extra_format_fun Optional function to apply additional formatting, allowing users to specify additional
 #' calls of `addStyle()` (or other openxslx functions, like setting column width). First argument must be the workbook

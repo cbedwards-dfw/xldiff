@@ -19,5 +19,7 @@ Imports:
     openxlsx,
     purrr,
     readxl,
-    rlang
+    rlang,
+    tibble,
+    tidyr
 URL: https://framverse.r-universe.dev/xldiff, https://github.com/cbedwards-dfw/xldiff

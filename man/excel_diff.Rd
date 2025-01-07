@@ -18,7 +18,7 @@ excel_diff(
 
 \item{file.2}{Filename (including path) for second file to compare}
 
-\item{results.name}{Name (including path) for fille to save comparison to. Must end in ".xlsx"}
+\item{results.name}{Name (including path) for file to save comparison to. Must end in ".xlsx"}
 
 \item{sheet.name}{character string of sheet to compare (must be present in both files)}
 
