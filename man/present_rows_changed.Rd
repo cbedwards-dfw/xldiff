@@ -4,7 +4,13 @@
 \alias{present_rows_changed}
 \title{Summarize the rows changed between two dataframes}
 \usage{
-present_rows_changed(t1, t2, digits.signif = 4, trim.cols = FALSE)
+present_rows_changed(
+  t1,
+  t2,
+  digits.signif = 4,
+  trim.cols = TRUE,
+  diff.only = TRUE
+)
 }
 \arguments{
 \item{t1}{First dataframe}
@@ -13,7 +19,9 @@ present_rows_changed(t1, t2, digits.signif = 4, trim.cols = FALSE)
 
 \item{digits.signif}{When flagging changes, comparison is presented in character form. How many significant digits do we present for numerical entries? Numeric, defaults to 4.}
 
-\item{trim.cols}{Remove unchanged columns? Useful with wide dataframes when viewing results in the console}
+\item{trim.cols}{Remove unchanged columns? Useful with wide dataframes when viewing results in the console. Defaults to TRUE.}
+
+\item{diff.only}{Show only the changed values? defaults to TRUE.}
 }
 \value{
 A diff of the two dataframes, similar to \verb{$sheet.diff} part of the return of sheet_comp. Includes a \code{row_number} column, and remaining columns have been labeled to match excel column naming conventions.
