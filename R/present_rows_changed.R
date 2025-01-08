@@ -23,15 +23,18 @@ present_rows_changed = function(t1,
 
   cli::cli_alert("The following rows have changed: {which(rows.changed)}")
 
+  mat.diff = out$sheet.diff
+  if(diff.only){
+    mat.diff[!out$mat.changed] = ""
+  }
   rowdiffs =
-    tibble::as_tibble(out$sheet.diff[rows.changed,])
+    tibble::as_tibble(mat.diff)
+  rowdiffs = rowdiffs[rows.changed, ]
 
   excel.colnames = apply(as.matrix(tidyr::expand_grid(c("",LETTERS), LETTERS)), 1, function(x) {paste(x, collapse = "")})
   names(rowdiffs) = excel.colnames[1:ncol(rowdiffs)]
 
-  if(diff.only){
-    rowdiffs[!out$mat.changed] = NA
-  }
+
 
   if(trim.cols){
     cols.changed = apply(out$mat.changed, 2, any)
