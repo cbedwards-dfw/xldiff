@@ -10,7 +10,7 @@
 #' @param file.1 Filename (including path) for first file to compare
 #' @param file.2 Filename (including path) for second file to compare
 #' @param results.name Name (including path) for file to save comparison to. Must end in ".xlsx"
-#' @param sheet.name character string of sheet to compare (must be present in both files)
+#' @param sheet.name character string of sheet to compare. If the sheets have different names (or to compare two sheets in one file), can take a character vector of length two, with the sheet names from the first and second file in order.
 #' @param extra_format_fun Optional function to apply additional formatting, allowing users to specify additional
 #' calls of `addStyle()` (or other openxslx functions, like setting column width). First argument must be the workbook
 #' object this function makes changes to; second argument must be the name of the worksheet this function makes
@@ -66,10 +66,12 @@ excel_diff = function(file.1, file.2, results.name, sheet.name, extra_format_fun
   if(!is.null(extra_format_fun) & !is.function(extra_format_fun)){
     cli::cli_abort("If provided, `extra_format_fun` must be a function.")
   }
+  if(length(sheet.name) == 1){
+    sheet.name = c(sheet.name, sheet.name)
+  }
 
-
-  f1 = readxl::read_excel(file.1, sheet = sheet.name, col_names = FALSE)
-  f2 = readxl::read_excel(file.2, sheet = sheet.name, col_names = FALSE)
+  f1 = readxl::read_excel(file.1, sheet = sheet.name[1], col_names = FALSE)
+  f2 = readxl::read_excel(file.2, sheet = sheet.name[2], col_names = FALSE)
 
   #carry out sheet comparison
   sheet.comp = sheet_comp(f1, f2)
@@ -91,3 +93,6 @@ excel_diff = function(file.1, file.2, results.name, sheet.name, extra_format_fun
 
   openxlsx::saveWorkbook(wb, file = results.name, overwrite = TRUE)
 }
+
+
+

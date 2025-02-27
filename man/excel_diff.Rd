@@ -20,7 +20,7 @@ excel_diff(
 
 \item{results.name}{Name (including path) for file to save comparison to. Must end in ".xlsx"}
 
-\item{sheet.name}{character string of sheet to compare (must be present in both files)}
+\item{sheet.name}{character string of sheet to compare. If the sheets have different names (or to compare two sheets in one file), can take a character vector of length two, with the sheet names from the first and second file in order.}
 
 \item{extra_format_fun}{Optional function to apply additional formatting, allowing users to specify additional
 calls of \code{addStyle()} (or other openxslx functions, like setting column width). First argument must be the workbook
