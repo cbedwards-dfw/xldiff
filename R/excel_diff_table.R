@@ -26,7 +26,8 @@ excel_diff_table <- function(file.1, file.2, sheet.name){
   f1 = readxl::read_excel(file.1, sheet = sheet.name[1], col_names = FALSE)
   f2 = readxl::read_excel(file.2, sheet = sheet.name[2], col_names = FALSE)
 
-  diff_to_table(f1, f2, dfnames = c(file.1, file.2),
+  diff_to_table(df1 = f1,
+                df2 = f2, dfnames = c(file.1, file.2),
                 excelify.col.names = TRUE)
 }
 
@@ -50,60 +51,67 @@ excel_diff_table <- function(file.1, file.2, sheet.name){
 #' df2[5, c(3,4)] = c(11, 15)
 #' diff_to_table(df1, df2)
 diff_to_table = function(df1, df2, dfnames = NULL, excelify.col.names = FALSE){
-  sheet.comp <- sheet_comp(df1, df2)
 
-  rows.mod = which(apply(sheet.comp$mat.changed, 1, any))
+  sheet.comp.basic <- sheet_comp_basic(df1, df2)
 
-  ## the following will be reformed as dfs, just using lists for speed
-  diff.ls = list()
-  ## note: these should be pairs of row/cols for highlighting
-  highlight.red.ls = list()
-  highlight.green.ls = list()
-  i.row = 1
+  rows.mod = which(apply(sheet.comp.basic, 1, any))
 
-  for(i in 1:length(rows.mod)){
-    cur.row = rows.mod[[i]]
-    diff.ls[[i]] = cbind(ROW = rep(cur.row, 2), ##adding identifier column
-                         dplyr::bind_rows(df1[cur.row,],
-                                          df2[cur.row,])
-    )
+  if(length(rows.mod) == 0){
+    cli::cli_alert_success("No differences detected")
+    tab.use <- flextable::flextable(data = data.frame(results = "No difference detected"))
+  } else {
 
-    highlight.red.ls[[i]] = data.frame(rows = rep(i.row, sum(sheet.comp$mat.changed[cur.row,])),
-                                       cols = which(sheet.comp$mat.changed[cur.row,])+1) ##accounting for new identifier column
-    highlight.green.ls[[i]] = highlight.red.ls[[i]] |>
-      dplyr::mutate(rows = .data$rows+1)
-    i.row = i.row + 2 ## one each for initial and final
-  }
+    ## the following will be reformed as dfs, just using lists for speed
+    diff.ls = list()
+    ## note: these should be pairs of row/cols for highlighting
+    highlight.red.ls = list()
+    highlight.green.ls = list()
+    i.row = 1
 
-  diff.df = dplyr::bind_rows(diff.ls)
-  highlight.red.df = dplyr::bind_rows(highlight.red.ls)
-  highlight.green.df = dplyr::bind_rows(highlight.green.ls)
+    for(i in 1:length(rows.mod)){
+      cur.row = rows.mod[[i]]
+      diff.ls[[i]] = cbind(ROW = rep(cur.row, 2), ##adding identifier column
+                           dplyr::bind_rows(df1[cur.row,],
+                                            df2[cur.row,])
+      )
 
-  if(excelify.col.names){
-    names(diff.df) = c("ROWS",
-                       apply(tidyr::expand_grid(c("", LETTERS), LETTERS),
-                             1, paste0, collapse = ""))[1:ncol(diff.df)]
-  }
+      highlight.red.ls[[i]] = data.frame(rows = rep(i.row, sum(sheet.comp.basic[cur.row,])),
+                                         cols = which(sheet.comp.basic[cur.row,])+1) ##accounting for new identifier column
+      highlight.green.ls[[i]] = highlight.red.ls[[i]] |>
+        dplyr::mutate(rows = .data$rows+1)
+      i.row = i.row + 2 ## one each for initial and final
+    }
 
-  if(is.null(dfnames)){
-    tab.title = "Diff table"
-  }else{
-    tab.title = paste0("Diff of ", dfnames[1], " to ", dfnames[2])
-  }
-  tab.use = diff.df |>
-    flextable::flextable() |>
-    flextable::hline(i = (1:(nrow(diff.df)/2-1))*2) |>
-    flextable::vline(j = 1) |>
-    flextable::set_caption(tab.title)
+    diff.df = do.call(rbind, diff.ls)
+    highlight.red.df = do.call(rbind, highlight.red.ls)
+    highlight.green.df = do.call(rbind, highlight.green.ls)
 
-  for(i.row in 1:nrow(highlight.green.df)){
-    tab.use <- tab.use |>
-      flextable::highlight(i = highlight.green.df$rows[i.row],
-                           j = highlight.green.df$cols[i.row],
-                           color = "#9beeb4") |>
-      flextable:: highlight(i = highlight.red.df$rows[i.row],
-                            j = highlight.red.df$cols[i.row],
-                            color = "#ffbfbd")
+    if(excelify.col.names){
+      names(diff.df) = c("ROWS",
+                         apply(tidyr::expand_grid(c("", LETTERS), LETTERS),
+                               1, paste0, collapse = ""))[1:ncol(diff.df)]
+    }
+
+    if(is.null(dfnames)){
+      tab.title = "Diff table"
+    }else{
+      tab.title = paste0("Diff of ", dfnames[1], " to ", dfnames[2])
+    }
+    tab.use = diff.df |>
+      flextable::flextable() |>
+      flextable::hline(i = (1:(nrow(diff.df)/2-1))*2) |>
+      flextable::vline(j = 1) |>
+      flextable::set_caption(tab.title)
+
+    for(i.row in 1:nrow(highlight.green.df)){
+      tab.use <- tab.use |>
+        flextable::highlight(i = highlight.green.df$rows[i.row],
+                             j = highlight.green.df$cols[i.row],
+                             color = "#9beeb4") |>
+        flextable:: highlight(i = highlight.red.df$rows[i.row],
+                              j = highlight.red.df$cols[i.row],
+                              color = "#ffbfbd")
+    }
   }
   return(tab.use)
 }

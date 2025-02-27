@@ -112,3 +112,31 @@ sheet_comp = function(t1, t2, digits.signif = 4){
               mat.diff.decrease = mat.diff.decrease,
               mat.diff.increase = mat.diff.increase))
 }
+
+#' Stripped down version of sheet_comp
+#'
+#' @inheritParams sheet_comp
+#'
+#' @return logical matrix
+#'
+#' @examples
+sheet_comp_basic <-  function(t1, t2){
+  if(!(all(dim(t1) == dim(t2)))){
+    cli::cli_abort("Dataframes `t1` and `t2` must have the same dimensions")
+  }
+
+  mat1 = as.matrix(t1)
+  mat2 = as.matrix(t2)
+
+  ## cut out extraneous NAs now
+  mat1 = mat1[1:max(which(!apply(mat1, 1, function(x){all(is.na(x))}))),]
+  mat2 = mat2[1:max(which(!apply(mat2, 1, function(x){all(is.na(x))}))),]
+
+  ## translate NAs for better comparison
+  mat1[is.na(mat1)] = "**NA**"
+  mat2[is.na(mat2)] = "**NA**"
+
+  ## find differences
+  mat.diff = (mat1 != mat2)
+  return(mat.diff)
+}
