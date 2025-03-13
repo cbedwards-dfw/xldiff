@@ -10,7 +10,7 @@
 #' @param file.1 Filename (including path) for first file to compare
 #' @param file.2 Filename (including path) for second file to compare
 #' @param results.name Name (including path) for file to save comparison to. Must end in ".xlsx"
-#' @param sheet.name character string of sheet to compare. If the sheets have different names (or to compare two sheets in one file), can take a character vector of length two, with the sheet names from the first and second file in order.
+#' @param sheet.name character string of sheet to compare. If the sheets have different names (or to compare two sheets in one file), can take a character vector of length two, with the sheet names from the first and second file in order. In this case, the results file will use the first of the sheet names.
 #' @param extra_format_fun Optional function to apply additional formatting, allowing users to specify additional
 #' calls of `addStyle()` (or other openxslx functions, like setting column width). First argument must be the workbook
 #' object this function makes changes to; second argument must be the name of the worksheet this function makes
@@ -79,16 +79,16 @@ excel_diff = function(file.1, file.2, results.name, sheet.name, extra_format_fun
   ## create workbook
   wb = openxlsx::createWorkbook()
   ## add in our sheet, fill in with the comparison information
-  openxlsx::addWorksheet(wb, sheetName = sheet.name)
-  openxlsx::writeData(wb, sheet.name, x = sheet.comp$sheet.diff, colNames = FALSE, keepNA = FALSE)
+  openxlsx::addWorksheet(wb, sheetName = sheet.name[1])
+  openxlsx::writeData(wb, sheet.name[1], x = sheet.comp$sheet.diff, colNames = FALSE, keepNA = FALSE)
 
   ## support adding in additional formatting
   if(! is.null(extra_format_fun)){
-    extra_format_fun(wb, sheet.name, ...)
+    extra_format_fun(wb, sheet.name[1], ...)
   }
 
   ## highlight cells that changes
-  add_changed_formats(wb, cur.sheet = sheet.name, sheet.comp = sheet.comp)
+  add_changed_formats(wb, cur.sheet = sheet.name[1], sheet.comp = sheet.comp)
 
 
   openxlsx::saveWorkbook(wb, file = results.name, overwrite = TRUE)
