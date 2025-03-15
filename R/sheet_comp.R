@@ -119,7 +119,6 @@ sheet_comp = function(t1, t2, digits.signif = 4){
 #'
 #' @return logical matrix
 #'
-#' @examples
 sheet_comp_basic <-  function(t1, t2){
   if(!(all(dim(t1) == dim(t2)))){
     cli::cli_abort("Dataframes `t1` and `t2` must have the same dimensions")

@@ -22,5 +22,6 @@ Imports:
     readxl,
     rlang,
     tibble,
-    tidyr
+    tidyr,
+    tidyxl
 URL: https://framverse.r-universe.dev/xldiff, https://github.com/cbedwards-dfw/xldiff
