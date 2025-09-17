@@ -3,6 +3,7 @@
 #' Similar to excel_diff, but returns flextable that can be displayed and navigated in the Rstudio viewer. Only shows rows that have changed. For every row with changes, provides a row of before and after, highlighting changed vlaues (red for the value in file.1, green for the value in file.2)."ROWS" column identifies excel row number and columns identify excel column names.
 #'
 #' @inheritParams excel_diff
+#' @inheritParams sheet_comp
 #'
 #' @return flextable object.
 #' @export
@@ -13,7 +14,7 @@
 #'file.2 = "C:/Repos/test file 2.xlsx",
 #'sheet = "Sheet1")
 #'}
-excel_diff_table <- function(file.1, file.2, sheet.name){
+excel_diff_table <- function(file.1, file.2, sheet.name, digits.signif = 6){
 
   if(!all(grepl(".xlsx$", c(file.1, file.2)))){
     cli::cli_abort("`file.1` and `file.2` must end in `.xlsx`.")
@@ -27,7 +28,9 @@ excel_diff_table <- function(file.1, file.2, sheet.name){
   f2 = readxl::read_excel(file.2, sheet = sheet.name[2], col_names = FALSE)
 
   diff_to_table(df1 = f1,
-                df2 = f2, dfnames = c(file.1, file.2),
+                df2 = f2,
+                digits.signif = digits.signif,
+                dfnames = c(file.1, file.2),
                 excelify.col.names = TRUE)
 }
 
@@ -38,6 +41,7 @@ excel_diff_table <- function(file.1, file.2, sheet.name){
 #'
 #' @param df1 first dataframe or tibble
 #' @param df2 second dataframe or tibble
+#' @inheritParams sheet_comp
 #' @param dfnames Character vector with names of the two dataframes to use for table title. Optional.
 #' @param excelify.col.names Should columns be identified by excel letter convention? Defaults to FALSE. Set to TRUE when comparing dataframes extracted from excel sheets.
 #'
@@ -50,9 +54,11 @@ excel_diff_table <- function(file.1, file.2, sheet.name){
 #' df2[2,2] = -8
 #' df2[5, c(3,4)] = c(11, 15)
 #' diff_to_table(df1, df2)
-diff_to_table = function(df1, df2, dfnames = NULL, excelify.col.names = FALSE){
+diff_to_table = function(df1, df2,
+                         digits.signif = 6,
+                         dfnames = NULL, excelify.col.names = FALSE){
 
-  sheet.comp.basic <- sheet_comp_basic(df1, df2)
+  sheet.comp.basic <- sheet_comp(df1, df2, digits.signif)$mat.changed
 
   rows.mod = which(apply(sheet.comp.basic, 1, any))
 

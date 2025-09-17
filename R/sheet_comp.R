@@ -108,7 +108,8 @@ sheet_comp = function(t1, t2, digits.signif = 4){
 
 
   return(list(sheet.diff = mat.new,
-              mat.changed = mat.diff, mat.diff.text = mat.diff.text,
+              mat.changed = mat.diff,
+              mat.diff.text = mat.diff.text,
               mat.diff.decrease = mat.diff.decrease,
               mat.diff.increase = mat.diff.increase))
 }
