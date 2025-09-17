@@ -4,12 +4,20 @@
 \alias{diff_to_table}
 \title{Compares two dataframes and returns diff as flextable}
 \usage{
-diff_to_table(df1, df2, dfnames = NULL, excelify.col.names = FALSE)
+diff_to_table(
+  df1,
+  df2,
+  digits.signif = 6,
+  dfnames = NULL,
+  excelify.col.names = FALSE
+)
 }
 \arguments{
 \item{df1}{first dataframe or tibble}
 
 \item{df2}{second dataframe or tibble}
+
+\item{digits.signif}{When flagging changes, comparison is presented in character form. How many significant digits do we present for numerical entries? Numeric, defaults to 4.}
 
 \item{dfnames}{Character vector with names of the two dataframes to use for table title. Optional.}
 

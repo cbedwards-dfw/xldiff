@@ -4,7 +4,7 @@
 \alias{excel_diff_table}
 \title{Diff excel sheets and show table}
 \usage{
-excel_diff_table(file.1, file.2, sheet.name)
+excel_diff_table(file.1, file.2, sheet.name, digits.signif = 6)
 }
 \arguments{
 \item{file.1}{Filename (including path) for first file to compare}
@@ -12,6 +12,8 @@ excel_diff_table(file.1, file.2, sheet.name)
 \item{file.2}{Filename (including path) for second file to compare}
 
 \item{sheet.name}{character string of sheet to compare. If the sheets have different names (or to compare two sheets in one file), can take a character vector of length two, with the sheet names from the first and second file in order. In this case, the results file will use the first of the sheet names.}
+
+\item{digits.signif}{When flagging changes, comparison is presented in character form. How many significant digits do we present for numerical entries? Numeric, defaults to 4.}
 }
 \value{
 flextable object.
