@@ -8,6 +8,7 @@ diff_to_table(
   df1,
   df2,
   digits.signif = 6,
+  proportional_diff = FALSE,
   dfnames = NULL,
   excelify.col.names = FALSE
 )
@@ -17,7 +18,9 @@ diff_to_table(
 
 \item{df2}{second dataframe or tibble}
 
-\item{digits.signif}{When flagging changes, comparison is presented in character form. How many significant digits do we present for numerical entries? Numeric, defaults to 4.}
+\item{digits.signif}{When comparing numeric values, what decimal do we want to round to before flagging changes? Also used to limit printing of changes? Numeric, defaults to 4.}
+
+\item{proportional_diff}{Should flagging of numeric changes be based on absolute differences or the ratio of values, sheet2/sheet? If TRUE, uses \code{digits.signif} to identify proportional threshold. \code{proportional_diff = TRUE} and \code{digits.signif}}
 
 \item{dfnames}{Character vector with names of the two dataframes to use for table title. Optional.}
 
