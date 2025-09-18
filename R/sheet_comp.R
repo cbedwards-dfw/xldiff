@@ -3,11 +3,14 @@
 #' Primary funtion for `xldiff` package. When cell values change between dataframe `t1` and
 #' dataframe `t2`, the corresponding `$sheetdiff` entry will show \[the first value\] `--> ` \[the second value\].
 #' Note that because these changes are presenting as characters, changes in numbers with many digits can produce difficult-to-read cells.
-#' The `digits.signif` can be used to determine how many significant digits should be presented in the "arrow" cells.
+#' The `digits.signif` can be used to determine how many significant digits should be used when identifying changes to numeric values,
+#' and how many digits should be presented in the "arrow" cells. `proprotional_diff` allows toggling between identifying changes based on
+#' absolute value (`FALSE`) or proportional changes (`TRUE`). For example, `proportional_diff = TRUE` and `digits.signif = 2` will flag numeric changes of at least 1%.
 #'
 #' @param t1 First dataframe
 #' @param t2 Second dataframe, same dimensions as first.
-#' @param digits.signif When flagging changes, comparison is presented in character form. How many significant digits do we present for numerical entries? Numeric, defaults to 4.
+#' @param digits.signif When comparing numeric values, what decimal do we want to round to before flagging changes? Also used to limit printing of changes? Numeric, defaults to 4.
+#' @param proportional_diff Should flagging of numeric changes be based on absolute differences or the ratio of values, sheet2/sheet? If TRUE, uses `digits.signif` to identify proportional threshold. `proportional_diff = TRUE` and `digits.signif`
 #'
 #' @return List of comparison data frames, including logical matrices used in formatting cells to
 #' highlight changes.
@@ -29,9 +32,9 @@
 #' t2$flipper_length_mm[1] = 18
 #' sheet_comp(t1, t2, digits.signif = 4)
 #' }
-sheet_comp = function(t1, t2, digits.signif = 4){
+sheet_comp = function(t1, t2, digits.signif = 4, proportional_diff = FALSE){
   if(!(all(dim(t1) == dim(t2)))){
-   cli::cli_abort("Dataframes `t1` and `t2` must have the same dimensions")
+    cli::cli_abort("Dataframes `t1` and `t2` must have the same dimensions")
   }
   if(!is.numeric(digits.signif)){
     cli::cli_abort("`digits.signif` must be positive integer.")
@@ -63,15 +66,51 @@ sheet_comp = function(t1, t2, digits.signif = 4){
   mat.numbers.percents = suppressWarnings(!is.na(as.numeric(gsub("%$", "", mat1))) &
                                             !is.na(as.numeric(gsub("%$", "", mat2))))
   mat.numbers.percents = mat.numbers.percents & !mat.numbers
+  comparify_nums = function(x){
+    as.numeric(x) + sign(as.numeric(x))/1000
+  }
 
-  ## for numeric entries, update mat.diff with rounded comparison
-  mat.diff[mat.numbers] = round(as.numeric(mat1[mat.numbers]), digits.signif) !=
-    round(as.numeric(mat2[mat.numbers]), digits.signif)
 
-  mat.diff[mat.numbers.percents] = suppressWarnings(
-    round(as.numeric(gsub("%$", "", mat1)[mat.numbers.percents]), digits.signif) !=
-      round(as.numeric(gsub("%$", "", mat2)[mat.numbers.percents]), digits.signif)
-  )
+  if(proportional_diff){
+    mat.denominator.zero = suppressWarnings(!is.na(as.numeric(mat1)) &
+                                              !is.na(as.numeric(mat2)) &
+                                              mat1 == 0)
+    mat.diff[mat.numbers] =
+      suppressWarnings(round(comparify_nums(mat2[mat.numbers]) /
+                               comparify_nums(mat1[mat.numbers]),
+                             digits.signif) != 1)
+    mat.diff[mat.numbers.percents] = suppressWarnings(
+      round(comparify_nums(gsub("%$", "", mat2)[mat.numbers.percents]) /
+              comparify_nums(gsub("%$", "", mat1)[mat.numbers.percents]),
+            digits.signif) != 1)
+    # handling cases when denominator is 0
+     mat.denominator.zero = suppressWarnings(!is.na(as.numeric(mat1)) &
+                                               !is.na(as.numeric(mat2)) &
+                                               mat1 == 0)
+     mat.diff[mat.denominator.zero] =
+       round(as.numeric(mat2[mat.denominator.zero]), digits.signif) != 0
+     ## handles cases when denominator is 0 and %s.
+     mat.denominator.zero =
+
+       suppressWarnings(!is.na(as.numeric(gsub("%$", "", mat1))) &
+                        !is.na(as.numeric(gsub("%$", "", mat2))) &
+                        !mat.numbers &
+                        as.numeric(gsub("%$", "", mat1) != 0)
+
+     )
+     mat.diff[mat.denominator.zero] =
+       round(as.numeric(gsub("%$", "", mat2)[mat.denominator.zero]), digits.signif) == 0
+
+  } else {
+    ## for numeric entries, update mat.diff with rounded comparison
+    mat.diff[mat.numbers] = round(as.numeric(mat1[mat.numbers]), digits.signif) !=
+      round(as.numeric(mat2[mat.numbers]), digits.signif)
+
+    mat.diff[mat.numbers.percents] = suppressWarnings(
+      round(as.numeric(gsub("%$", "", mat1)[mat.numbers.percents]), digits.signif) !=
+        round(as.numeric(gsub("%$", "", mat2)[mat.numbers.percents]), digits.signif)
+    )
+  }
 
   ## find indices for changes that are text and are numeric
   ind.diff.text = which(mat.diff & !mat.numbers)

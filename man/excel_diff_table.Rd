@@ -4,7 +4,13 @@
 \alias{excel_diff_table}
 \title{Diff excel sheets and show table}
 \usage{
-excel_diff_table(file.1, file.2, sheet.name, digits.signif = 6)
+excel_diff_table(
+  file.1,
+  file.2,
+  sheet.name,
+  digits.signif = 3,
+  proportional_diff = TRUE
+)
 }
 \arguments{
 \item{file.1}{Filename (including path) for first file to compare}
@@ -13,13 +19,15 @@ excel_diff_table(file.1, file.2, sheet.name, digits.signif = 6)
 
 \item{sheet.name}{character string of sheet to compare. If the sheets have different names (or to compare two sheets in one file), can take a character vector of length two, with the sheet names from the first and second file in order. In this case, the results file will use the first of the sheet names.}
 
-\item{digits.signif}{When flagging changes, comparison is presented in character form. How many significant digits do we present for numerical entries? Numeric, defaults to 4.}
+\item{digits.signif}{When comparing numeric values, what decimal do we want to round to before flagging changes? Also used to limit printing of changes? Numeric, defaults to 4.}
+
+\item{proportional_diff}{Should flagging of numeric changes be based on absolute differences or the ratio of values, sheet2/sheet? If TRUE, uses \code{digits.signif} to identify proportional threshold. \code{proportional_diff = TRUE} and \code{digits.signif}}
 }
 \value{
 flextable object.
 }
 \description{
-Similar to excel_diff, but returns flextable that can be displayed and navigated in the Rstudio viewer. Only shows rows that have changed. For every row with changes, provides a row of before and after, highlighting changed vlaues (red for the value in file.1, green for the value in file.2)."ROWS" column identifies excel row number and columns identify excel column names.
+Similar to excel_diff, but returns flextable that can be displayed and navigated in the Rstudio viewer. Only shows rows that have changed. For every row with changes, provides a row of before and after, highlighting changed vlaues (red for the value in file.1, green for the value in file.2)."ROWS" column identifies excel row number and columns identify excel column names. Defaults to flagging changes of at least 0.1\% from \code{file.1} to \code{file.2} (\code{proportional_diff = TRUE}, \code{digits.signif = 3}).
 }
 \examples{
 \dontrun{

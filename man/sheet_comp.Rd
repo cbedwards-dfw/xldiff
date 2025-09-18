@@ -4,14 +4,16 @@
 \alias{sheet_comp}
 \title{Compare two dataframes of spreadsheets}
 \usage{
-sheet_comp(t1, t2, digits.signif = 4)
+sheet_comp(t1, t2, digits.signif = 4, proportional_diff = FALSE)
 }
 \arguments{
 \item{t1}{First dataframe}
 
 \item{t2}{Second dataframe, same dimensions as first.}
 
-\item{digits.signif}{When flagging changes, comparison is presented in character form. How many significant digits do we present for numerical entries? Numeric, defaults to 4.}
+\item{digits.signif}{When comparing numeric values, what decimal do we want to round to before flagging changes? Also used to limit printing of changes? Numeric, defaults to 4.}
+
+\item{proportional_diff}{Should flagging of numeric changes be based on absolute differences or the ratio of values, sheet2/sheet? If TRUE, uses \code{digits.signif} to identify proportional threshold. \code{proportional_diff = TRUE} and \code{digits.signif}}
 }
 \value{
 List of comparison data frames, including logical matrices used in formatting cells to
@@ -27,7 +29,9 @@ highlight changes.
 Primary funtion for \code{xldiff} package. When cell values change between dataframe \code{t1} and
 dataframe \code{t2}, the corresponding \verb{$sheetdiff} entry will show [the first value] \verb{--> } [the second value].
 Note that because these changes are presenting as characters, changes in numbers with many digits can produce difficult-to-read cells.
-The \code{digits.signif} can be used to determine how many significant digits should be presented in the "arrow" cells.
+The \code{digits.signif} can be used to determine how many significant digits should be used when identifying changes to numeric values,
+and how many digits should be presented in the "arrow" cells. \code{proprotional_diff} allows toggling between identifying changes based on
+absolute value (\code{FALSE}) or proportional changes (\code{TRUE}). For example, \code{proportional_diff = TRUE} and \code{digits.signif = 2} will flag numeric changes of at least 1\%.
 }
 \examples{
 \dontrun{

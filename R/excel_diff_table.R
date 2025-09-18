@@ -1,6 +1,6 @@
 #' Diff excel sheets and show table
 #'
-#' Similar to excel_diff, but returns flextable that can be displayed and navigated in the Rstudio viewer. Only shows rows that have changed. For every row with changes, provides a row of before and after, highlighting changed vlaues (red for the value in file.1, green for the value in file.2)."ROWS" column identifies excel row number and columns identify excel column names.
+#' Similar to excel_diff, but returns flextable that can be displayed and navigated in the Rstudio viewer. Only shows rows that have changed. For every row with changes, provides a row of before and after, highlighting changed vlaues (red for the value in file.1, green for the value in file.2)."ROWS" column identifies excel row number and columns identify excel column names. Defaults to flagging changes of at least 0.1% from `file.1` to `file.2` (`proportional_diff = TRUE`, `digits.signif = 3`).
 #'
 #' @inheritParams excel_diff
 #' @inheritParams sheet_comp
@@ -14,7 +14,7 @@
 #'file.2 = "C:/Repos/test file 2.xlsx",
 #'sheet = "Sheet1")
 #'}
-excel_diff_table <- function(file.1, file.2, sheet.name, digits.signif = 6){
+excel_diff_table <- function(file.1, file.2, sheet.name, digits.signif = 3, proportional_diff = TRUE){
 
   if(!all(grepl(".xlsx$", c(file.1, file.2)))){
     cli::cli_abort("`file.1` and `file.2` must end in `.xlsx`.")
@@ -24,12 +24,13 @@ excel_diff_table <- function(file.1, file.2, sheet.name, digits.signif = 6){
     sheet.name = c(sheet.name, sheet.name)
   }
 
-  f1 = readxl::read_excel(file.1, sheet = sheet.name[1], col_names = FALSE)
-  f2 = readxl::read_excel(file.2, sheet = sheet.name[2], col_names = FALSE)
+  f1 = readxl::read_excel(file.1, sheet = sheet.name[1], col_names = FALSE, .name_repair = "unique_quiet")
+  f2 = readxl::read_excel(file.2, sheet = sheet.name[2], col_names = FALSE, .name_repair = "unique_quiet")
 
   diff_to_table(df1 = f1,
                 df2 = f2,
                 digits.signif = digits.signif,
+                proportional_diff = proportional_diff,
                 dfnames = c(file.1, file.2),
                 excelify.col.names = TRUE)
 }
@@ -56,9 +57,11 @@ excel_diff_table <- function(file.1, file.2, sheet.name, digits.signif = 6){
 #' diff_to_table(df1, df2)
 diff_to_table = function(df1, df2,
                          digits.signif = 6,
+                         proportional_diff = FALSE,
                          dfnames = NULL, excelify.col.names = FALSE){
 
-  sheet.comp.basic <- sheet_comp(df1, df2, digits.signif)$mat.changed
+  sheet.comp.basic <- sheet_comp(df1, df2, digits.signif,
+                           proportional_diff = proportional_diff)$mat.changed
 
   rows.mod = which(apply(sheet.comp.basic, 1, any))
 

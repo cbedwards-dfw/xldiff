@@ -70,8 +70,10 @@ excel_diff = function(file.1, file.2, results.name, sheet.name, extra_format_fun
     sheet.name = c(sheet.name, sheet.name)
   }
 
-  f1 = readxl::read_excel(file.1, sheet = sheet.name[1], col_names = FALSE)
-  f2 = readxl::read_excel(file.2, sheet = sheet.name[2], col_names = FALSE)
+  f1 = readxl::read_excel(file.1, sheet = sheet.name[1], col_names = FALSE,
+                          .name_repair = "unique_quiet")
+  f2 = readxl::read_excel(file.2, sheet = sheet.name[2], col_names = FALSE,
+                          .name_repair = "unique_quiet")
 
   #carry out sheet comparison
   sheet.comp = sheet_comp(f1, f2)

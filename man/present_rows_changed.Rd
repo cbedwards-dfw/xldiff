@@ -17,7 +17,7 @@ present_rows_changed(
 
 \item{t2}{Second dataframe, same dimensions as first.}
 
-\item{digits.signif}{When flagging changes, comparison is presented in character form. How many significant digits do we present for numerical entries? Numeric, defaults to 4.}
+\item{digits.signif}{When comparing numeric values, what decimal do we want to round to before flagging changes? Also used to limit printing of changes? Numeric, defaults to 4.}
 
 \item{trim.cols}{Remove unchanged columns? Useful with wide dataframes when viewing results in the console. Defaults to TRUE.}
 
