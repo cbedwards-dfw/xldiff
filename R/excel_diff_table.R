@@ -106,11 +106,16 @@ diff_to_table = function(df1, df2,
     }else{
       tab.title = paste0("Diff of ", dfnames[1], " to ", dfnames[2])
     }
+
     tab.use = diff.df |>
       flextable::flextable() |>
-      flextable::hline(i = (1:(nrow(diff.df)/2-1))*2) |>
       flextable::vline(j = 1) |>
       flextable::set_caption(tab.title)
+    if(nrow(diff.df)>2){
+      tab.use = tab.use |>
+        flextable::hline(i = (1:(nrow(diff.df)/2-1))*2)
+
+    }
 
     for(i.row in 1:nrow(highlight.green.df)){
       tab.use <- tab.use |>
