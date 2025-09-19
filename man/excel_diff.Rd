@@ -9,6 +9,8 @@ excel_diff(
   file.2,
   results.name,
   sheet.name,
+  digits.signif = 3,
+  proportional.diff = TRUE,
   extra_format_fun = NULL,
   ...
 )
@@ -22,6 +24,10 @@ excel_diff(
 
 \item{sheet.name}{character string of sheet to compare. If the sheets have different names (or to compare two sheets in one file), can take a character vector of length two, with the sheet names from the first and second file in order. In this case, the results file will use the first of the sheet names.}
 
+\item{digits.signif}{Numeric, controls the amount of difference a number needs to have to be identified as differing between the two sheets. When \code{proportional.diff = TRUE}, defines proportional change that triggers a "diff" status, where the number is the number of digits of the proportion (2 = 1\% difference, 3 = 0.1\% difference, 4 = 0.01\% difference). When \code{proportional.diff = FALSE}, defines the absolute difference that triggers a difference, in digits of round (1 = 0.1 difference, 2 = 0.01 difference, 3 = 0.001).}
+
+\item{proportional.diff}{Should minor differences between cells be judged on an absolute basis (\code{FALSE}) or a proportional basis (\code{TRUE}). \code{FALSE} is useful for identifying a level of decimal dust that we don't want to worry about when diff-ing (e.g., "If the differences is in the 1000ths place or smaller, I don't care"). \code{TRUE} is useful when a sheet contains values of varying magnitudes, as it allows specifying proprotional changes that should be ignored when diffing (e.g., "If the value changed by less than 0.1\%, I don't care).}
+
 \item{extra_format_fun}{Optional function to apply additional formatting, allowing users to specify additional
 calls of \code{addStyle()} (or other openxslx functions, like setting column width). First argument must be the workbook
 object this function makes changes to; second argument must be the name of the worksheet this function makes
@@ -33,7 +39,7 @@ changes to}
 Compares a single sheet between two files, supports providing additional formatting
 in the form of the optional \code{extra_format_fun} argument. For more complex use cases (e.g.,
 multiple sheet, pre-comparison formatting to compare only specific regions, etc) \code{excel_diff} can
-be used as a simple template for writing your own function.
+be used as a simple template for writing your own function. Small numeric differences between cell values can be the result of happenstance ("decimal dust") - the \code{digits.signif} and \code{proportional.diff} arguments can control behavior to ignore minor numeric differences.
 }
 \examples{
 \dontrun{

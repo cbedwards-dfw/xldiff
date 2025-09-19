@@ -9,7 +9,7 @@ excel_diff_table(
   file.2,
   sheet.name,
   digits.signif = 3,
-  proportional_diff = TRUE
+  proportional.diff = TRUE
 )
 }
 \arguments{
@@ -19,15 +19,15 @@ excel_diff_table(
 
 \item{sheet.name}{character string of sheet to compare. If the sheets have different names (or to compare two sheets in one file), can take a character vector of length two, with the sheet names from the first and second file in order. In this case, the results file will use the first of the sheet names.}
 
-\item{digits.signif}{When comparing numeric values, what decimal do we want to round to before flagging changes? Also used to limit printing of changes? Numeric, defaults to 4.}
+\item{digits.signif}{Numeric, controls the amount of difference a number needs to have to be identified as differing between the two sheets. When \code{proportional.diff = TRUE}, defines proportional change that triggers a "diff" status, where the number is the number of digits of the proportion (2 = 1\% difference, 3 = 0.1\% difference, 4 = 0.01\% difference). When \code{proportional.diff = FALSE}, defines the absolute difference that triggers a difference, in digits of round (1 = 0.1 difference, 2 = 0.01 difference, 3 = 0.001).}
 
-\item{proportional_diff}{Should flagging of numeric changes be based on absolute differences or the ratio of values, sheet2/sheet? If TRUE, uses \code{digits.signif} to identify proportional threshold. \code{proportional_diff = TRUE} and \code{digits.signif}}
+\item{proportional.diff}{Should minor differences between cells be judged on an absolute basis (\code{FALSE}) or a proportional basis (\code{TRUE}). \code{FALSE} is useful for identifying a level of decimal dust that we don't want to worry about when diff-ing (e.g., "If the differences is in the 1000ths place or smaller, I don't care"). \code{TRUE} is useful when a sheet contains values of varying magnitudes, as it allows specifying proprotional changes that should be ignored when diffing (e.g., "If the value changed by less than 0.1\%, I don't care).}
 }
 \value{
 flextable object.
 }
 \description{
-Similar to excel_diff, but returns flextable that can be displayed and navigated in the Rstudio viewer. Only shows rows that have changed. For every row with changes, provides a row of before and after, highlighting changed vlaues (red for the value in file.1, green for the value in file.2)."ROWS" column identifies excel row number and columns identify excel column names. Defaults to flagging changes of at least 0.1\% from \code{file.1} to \code{file.2} (\code{proportional_diff = TRUE}, \code{digits.signif = 3}).
+Similar to excel_diff, but returns flextable that can be displayed and navigated in the Rstudio viewer. Only shows rows that have changed. For every row with changes, provides a row of before and after, highlighting changed vlaues (red for the value in file.1, green for the value in file.2)."ROWS" column identifies excel row number and columns identify excel column names. Defaults to flagging changes of at least 0.1\% from \code{file.1} to \code{file.2} (\code{proportional.diff = TRUE}, \code{digits.signif = 3}).
 }
 \examples{
 \dontrun{

@@ -4,7 +4,7 @@
 \alias{sheet_comp}
 \title{Compare two dataframes of spreadsheets}
 \usage{
-sheet_comp(t1, t2, digits.signif = 4, proportional_diff = FALSE)
+sheet_comp(t1, t2, digits.signif = 4, proportional.diff = FALSE)
 }
 \arguments{
 \item{t1}{First dataframe}
@@ -13,7 +13,7 @@ sheet_comp(t1, t2, digits.signif = 4, proportional_diff = FALSE)
 
 \item{digits.signif}{When comparing numeric values, what decimal do we want to round to before flagging changes? Also used to limit printing of changes? Numeric, defaults to 4.}
 
-\item{proportional_diff}{Should flagging of numeric changes be based on absolute differences or the ratio of values, sheet2/sheet? If TRUE, uses \code{digits.signif} to identify proportional threshold. \code{proportional_diff = TRUE} and \code{digits.signif}}
+\item{proportional.diff}{Should flagging of numeric changes be based on absolute differences or the ratio of values, sheet2/sheet? If TRUE, uses \code{digits.signif} to identify proportional threshold. \code{proportional.diff = TRUE} and \code{digits.signif}}
 }
 \value{
 List of comparison data frames, including logical matrices used in formatting cells to
@@ -31,7 +31,7 @@ dataframe \code{t2}, the corresponding \verb{$sheetdiff} entry will show [the fi
 Note that because these changes are presenting as characters, changes in numbers with many digits can produce difficult-to-read cells.
 The \code{digits.signif} can be used to determine how many significant digits should be used when identifying changes to numeric values,
 and how many digits should be presented in the "arrow" cells. \code{proprotional_diff} allows toggling between identifying changes based on
-absolute value (\code{FALSE}) or proportional changes (\code{TRUE}). For example, \code{proportional_diff = TRUE} and \code{digits.signif = 2} will flag numeric changes of at least 1\%.
+absolute value (\code{FALSE}) or proportional changes (\code{TRUE}). For example, \code{proportional.diff = TRUE} and \code{digits.signif = 2} will flag numeric changes of at least 1\%.
 }
 \examples{
 \dontrun{
