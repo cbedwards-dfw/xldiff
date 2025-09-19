@@ -5,12 +5,12 @@
 #' Note that because these changes are presenting as characters, changes in numbers with many digits can produce difficult-to-read cells.
 #' The `digits.signif` can be used to determine how many significant digits should be used when identifying changes to numeric values,
 #' and how many digits should be presented in the "arrow" cells. `proprotional_diff` allows toggling between identifying changes based on
-#' absolute value (`FALSE`) or proportional changes (`TRUE`). For example, `proportional_diff = TRUE` and `digits.signif = 2` will flag numeric changes of at least 1%.
+#' absolute value (`FALSE`) or proportional changes (`TRUE`). For example, `proportional.diff = TRUE` and `digits.signif = 2` will flag numeric changes of at least 1%.
 #'
 #' @param t1 First dataframe
 #' @param t2 Second dataframe, same dimensions as first.
 #' @param digits.signif When comparing numeric values, what decimal do we want to round to before flagging changes? Also used to limit printing of changes? Numeric, defaults to 4.
-#' @param proportional_diff Should flagging of numeric changes be based on absolute differences or the ratio of values, sheet2/sheet? If TRUE, uses `digits.signif` to identify proportional threshold. `proportional_diff = TRUE` and `digits.signif`
+#' @param proportional.diff Should flagging of numeric changes be based on absolute differences or the ratio of values, sheet2/sheet? If TRUE, uses `digits.signif` to identify proportional threshold. `proportional.diff = TRUE` and `digits.signif`
 #'
 #' @return List of comparison data frames, including logical matrices used in formatting cells to
 #' highlight changes.
@@ -32,7 +32,7 @@
 #' t2$flipper_length_mm[1] = 18
 #' sheet_comp(t1, t2, digits.signif = 4)
 #' }
-sheet_comp = function(t1, t2, digits.signif = 4, proportional_diff = FALSE){
+sheet_comp = function(t1, t2, digits.signif = 4, proportional.diff = FALSE){
   if(!(all(dim(t1) == dim(t2)))){
     cli::cli_abort("Dataframes `t1` and `t2` must have the same dimensions")
   }
@@ -71,7 +71,7 @@ sheet_comp = function(t1, t2, digits.signif = 4, proportional_diff = FALSE){
   }
 
 
-  if(proportional_diff){
+  if(proportional.diff){
     mat.denominator.zero = suppressWarnings(!is.na(as.numeric(mat1)) &
                                               !is.na(as.numeric(mat2)) &
                                               mat1 == 0)

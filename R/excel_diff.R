@@ -5,12 +5,14 @@
 #' Compares a single sheet between two files, supports providing additional formatting
 #' in the form of the optional `extra_format_fun` argument. For more complex use cases (e.g.,
 #' multiple sheet, pre-comparison formatting to compare only specific regions, etc) `excel_diff` can
-#' be used as a simple template for writing your own function.
+#' be used as a simple template for writing your own function. Small numeric differences between cell values can be the result of happenstance ("decimal dust") - the `digits.signif` and `proportional.diff` arguments can control behavior to ignore minor numeric differences.
 #'
 #' @param file.1 Filename (including path) for first file to compare
 #' @param file.2 Filename (including path) for second file to compare
 #' @param results.name Name (including path) for file to save comparison to. Must end in ".xlsx"
 #' @param sheet.name character string of sheet to compare. If the sheets have different names (or to compare two sheets in one file), can take a character vector of length two, with the sheet names from the first and second file in order. In this case, the results file will use the first of the sheet names.
+#' @param digits.signif Numeric, controls the amount of difference a number needs to have to be identified as differing between the two sheets. When `proportional.diff = TRUE`, defines proportional change that triggers a "diff" status, where the number is the number of digits of the proportion (2 = 1% difference, 3 = 0.1% difference, 4 = 0.01% difference). When `proportional.diff = FALSE`, defines the absolute difference that triggers a difference, in digits of round (1 = 0.1 difference, 2 = 0.01 difference, 3 = 0.001).
+#'
 #' @param extra_format_fun Optional function to apply additional formatting, allowing users to specify additional
 #' calls of `addStyle()` (or other openxslx functions, like setting column width). First argument must be the workbook
 #' object this function makes changes to; second argument must be the name of the worksheet this function makes
@@ -58,7 +60,10 @@
 
 
 
-excel_diff = function(file.1, file.2, results.name, sheet.name, extra_format_fun = NULL, ...){
+excel_diff = function(file.1, file.2, results.name, sheet.name,
+                      digits.signif = 3,
+                      proportional.diff = TRUE,
+                      extra_format_fun = NULL, ...){
 
   if(!all(grepl(".xls.?$", c(file.1, file.2, results.name)))){
     cli::cli_abort("`file.1`, `file.2`, and `results.name` must end in `.xlsx` or `.xls`.")
@@ -76,7 +81,7 @@ excel_diff = function(file.1, file.2, results.name, sheet.name, extra_format_fun
                           .name_repair = "unique_quiet")
 
   #carry out sheet comparison
-  sheet.comp = sheet_comp(f1, f2)
+  sheet.comp = sheet_comp(f1, f2, digits.signif = digits.signif, proportional.diff = proportional.diff)
 
   ## create workbook
   wb = openxlsx::createWorkbook()
