@@ -17,9 +17,9 @@ Useful when working with functions that need excel formats (e.g. \code{openxlsx2
 Does not try to simplify blocks of TRUEs into block addresses.
 }
 \examples{
-mat = matrix(FALSE, ncol = 4, nrow = 3)
-mat[1,1] = TRUE
-mat[2,3] = TRUE
+mat <- matrix(FALSE, ncol = 4, nrow = 3)
+mat[1, 1] <- TRUE
+mat[2, 3] <- TRUE
 mat
 mat_to_a1(mat)
 }

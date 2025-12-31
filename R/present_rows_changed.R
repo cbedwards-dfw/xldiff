@@ -4,49 +4,55 @@
 #' presents the rows that have changed: prints the row numbers to the console, and then
 #' returns the "diff" of those rows, with column names matching excel column naming conventions.
 #'
-#' @inheritParams sheet_comp
-#' @param trim.cols Remove unchanged columns? Useful with wide dataframes when viewing results in the console. Defaults to TRUE.
-#' @param diff.only Show only the changed values? defaults to TRUE.
+#' Alternatively, look at the `diffdf` package!
 #'
-#' @return A diff of the two dataframes, similar to `$sheet.diff` part of the return of sheet_comp. Includes a `row_number` column, and remaining columns have been labeled to match excel column naming conventions.
+#' @inheritParams sheet_comp
+#' @param trim_cols Remove unchanged columns? Useful with wide dataframes when viewing results in the console. Defaults to TRUE.
+#' @param diff_only Show only the changed values? defaults to TRUE.
+#'
+#' @return A diff of the two dataframes, similar to `$sheet_diff` part of the return of sheet_comp. Includes a `row_number` column, and remaining columns have been labeled to match excel column naming conventions.
 #' @export
 #'
-present_rows_changed = function(t1,
-                                t2,
-                                digits.signif = 4,
-                                trim.cols = TRUE,
-                                diff.only = TRUE){
+present_rows_changed <- function(t1,
+                                 t2,
+                                 proportional_threshold = 0.001,
+                                 absolute_threshold = NULL,
+                                 digits_show = 6,
+                                 trim_cols = TRUE,
+                                 diff_only = TRUE) {
+  out <- sheet_comp(t1, t2,
+    proportional_threshold = proportional_threshold,
+    absolute_threshold = absolute_threshold,
+    digits_show = digits_show
+  )
 
-  out = sheet_comp(t1, t2, digits.signif = digits.signif)
+  rows_changed <- apply(out$mat_changed, 1, any)
 
-  rows.changed = apply(out$mat.changed, 1, any)
+  cli::cli_alert("The following rows have changed: {which(rows_changed)}")
 
-  cli::cli_alert("The following rows have changed: {which(rows.changed)}")
-
-  mat.diff = out$sheet.diff
-  if(diff.only){
-    mat.diff[!out$mat.changed] = ""
+  mat_diff <- out$sheet_diff
+  if (diff_only) {
+    mat_diff[!out$mat_changed] <- ""
   }
-  rowdiffs =
-    tibble::as_tibble(mat.diff)
-  rowdiffs = rowdiffs[rows.changed, ]
+  rowdiffs <-
+    tibble::as_tibble(mat_diff)
+  rowdiffs <- rowdiffs[rows_changed, ]
 
-  excel.colnames = apply(as.matrix(tidyr::expand_grid(c("",LETTERS), LETTERS)), 1, function(x) {paste(x, collapse = "")})
-  names(rowdiffs) = excel.colnames[1:ncol(rowdiffs)]
+  excel_colnames <- apply(as.matrix(tidyr::expand_grid(c("", LETTERS), LETTERS)), 1, function(x) {
+    paste(x, collapse = "")
+  })
+  names(rowdiffs) <- excel_colnames[1:ncol(rowdiffs)]
 
 
 
-  if(trim.cols){
-    cols.changed = apply(out$mat.changed, 2, any)
-    rowdiffs = rowdiffs[, cols.changed] #slight jank - have new "row" column
+  if (trim_cols) {
+    cols_changed <- apply(out$mat_changed, 2, any)
+    rowdiffs <- rowdiffs[, cols_changed] # slight jank - have new "row" column
   }
-  # rowdiffs = rbind(rows = which(rows.changed),
+  # rowdiffs = rbind(rows = which(rows_changed),
   #                  rowdiffs)
-  rowdiffs = rowdiffs |>
-    dplyr::mutate(row_name = which(rows.changed)) |>
+  rowdiffs <- rowdiffs |>
+    dplyr::mutate(row_name = which(rows_changed)) |>
     dplyr::relocate("row_name")
   return(rowdiffs)
 }
-
-
-

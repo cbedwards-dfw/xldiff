@@ -16,9 +16,9 @@ Imports:
     cli,
     dplyr,
     flextable,
-    methods,
+    glue,
     openxlsx,
-    openxlsx2,
+    openxlsx2 (>= 1.22.0.9000),
     purrr,
     readxl,
     rlang,
@@ -26,3 +26,5 @@ Imports:
     tidyr,
     tidyxl
 URL: https://framverse.r-universe.dev/xldiff, https://github.com/cbedwards-dfw/xldiff, https://cbedwards-dfw.github.io/xldiff/
+Remotes: 
+    JanMarvin/openxlsx2

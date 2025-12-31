@@ -5,41 +5,51 @@
 \title{Minimal spreadsheet comparison function}
 \usage{
 excel_diff(
-  file.1,
-  file.2,
-  results.name,
-  sheet.name,
-  digits.signif = 3,
-  proportional.diff = TRUE
+  file_1,
+  file_2,
+  results_name,
+  sheet_name,
+  sheet_name_file_2 = NULL,
+  proportional_threshold = 0.001,
+  absolute_threshold = NULL,
+  digits_show = 6,
+  extra_width = 0.2
 )
 }
 \arguments{
-\item{file.1}{Filename (including path) for first file to compare}
+\item{file_1}{Filename (including path) for first file to compare}
 
-\item{file.2}{Filename (including path) for second file to compare}
+\item{file_2}{Filename (including path) for second file to compare}
 
-\item{results.name}{Name (including path) for file to save comparison to. Must end in ".xlsx"}
+\item{results_name}{Name (including path) for file to save comparison to. Must end in ".xlsx"}
 
-\item{sheet.name}{character string of sheet to compare. If the sheets have different names (or to compare two sheets in one file), can take a character vector of length two, with the sheet names from the first and second file in order. In this case, the results file will use the first of the sheet names.}
+\item{sheet_name}{Character string of sheet to compare. Can provide vector of character strings to produce comparisons of multiple sheets.}
 
-\item{digits.signif}{Numeric, controls the amount of difference a number needs to have to be identified as differing between the two sheets. When \code{proportional.diff = TRUE}, defines proportional change that triggers a "diff" status, where the number is the number of digits of the proportion (2 = 1\% difference, 3 = 0.1\% difference, 4 = 0.01\% difference). When \code{proportional.diff = FALSE}, defines the absolute difference that triggers a difference, in digits of round (1 = 0.1 difference, 2 = 0.01 difference, 3 = 0.001).}
+\item{sheet_name_file_2}{OPTIONAL. Matching sheet names to \code{sheet_name} but for file 2. Use only if the two files have matching sheets with different names. Defaults to NULL.}
 
-\item{proportional.diff}{Should minor differences between cells be judged on an absolute basis (\code{FALSE}) or a proportional basis (\code{TRUE}). \code{FALSE} is useful for identifying a level of decimal dust that we don't want to worry about when diff-ing (e.g., "If the differences is in the 1000ths place or smaller, I don't care"). \code{TRUE} is useful when a sheet contains values of varying magnitudes, as it allows specifying proprotional changes that should be ignored when diffing (e.g., "If the value changed by less than 0.1\%, I don't care).}
+\item{proportional_threshold}{Sets a threshold of proportional change below which differences should be ignored. For example, a value of 0.1 means any changes less than 10\% will not be flagged as having changed. \code{proportional_threshold} will override this value and behavior if it is provided. Numeric, defaults to 0.001 (0.1\% change).}
+
+\item{absolute_threshold}{Optional. Sets a threshold of absolute change below which differences should be ignored. For example, a value of 0.1 means any changes less than 0.1 will not be flagged as having changed. If provided, will override \code{proportional_threshold}. Numeric, defaults to NULL.}
+
+\item{digits_show}{When there is a change in number values, how many digits should be shown in \verb{## ---> ##}? Numeric, defaults to 6. Recommend not making this so small that flagged changes don't get printed (e.g., if this is 2 and \code{proportional_threshold} is 0.001, 0.1\% changes will get flagged, but only the first two digits will get shown).}
+
+\item{extra_width}{How much extra width should be added to columns that changed? Helpful to improve readability, since changed cells have longer entries. Numeric, defaults to 0.4.}
 }
 \description{
 Compares a single sheet between two files, creating a new file that uses the formatting of
 the existing sheets (except highlighting) and highlights cells that differed.
-Small numeric differences between cell values can be the result of happenstance ("decimal dust") - the \code{digits.signif} and \code{proportional.diff} arguments can control behavior to ignore minor numeric differences.
+Small numeric differences between cell values can be the result of happenstance ("decimal dust") - the \code{digits_signif} and \code{proportional.diff} arguments can control behavior to ignore minor numeric differences.
 }
 \examples{
 \dontrun{
-filename.1 = "Chin1124.xlsx"
-filename.2 = "Chin2524.xlsx"
+filename_1 <- "Chin1124.xlsx"
+filename_2 <- "Chin2524.xlsx"
 
-excel_diff(file.1 = filename.1,
-          file.2 = filename.2,
-          results.name = "Chin1124 vs Chin 2524.xlsx",
-          sheet.name = "ER_ESC_Overview_New"
+excel_diff(
+  file_1 = filename_1,
+  file_2 = filename_2,
+  results.name = "Chin1124 vs Chin 2524.xlsx",
+  sheet_name = "ER_ESC_Overview_New"
 )
 }
 }
