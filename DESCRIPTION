@@ -18,6 +18,7 @@ Imports:
     flextable,
     methods,
     openxlsx,
+    openxlsx2,
     purrr,
     readxl,
     rlang,

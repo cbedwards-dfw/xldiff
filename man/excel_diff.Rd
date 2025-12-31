@@ -10,9 +10,7 @@ excel_diff(
   results.name,
   sheet.name,
   digits.signif = 3,
-  proportional.diff = TRUE,
-  extra_format_fun = NULL,
-  ...
+  proportional.diff = TRUE
 )
 }
 \arguments{
@@ -27,54 +25,21 @@ excel_diff(
 \item{digits.signif}{Numeric, controls the amount of difference a number needs to have to be identified as differing between the two sheets. When \code{proportional.diff = TRUE}, defines proportional change that triggers a "diff" status, where the number is the number of digits of the proportion (2 = 1\% difference, 3 = 0.1\% difference, 4 = 0.01\% difference). When \code{proportional.diff = FALSE}, defines the absolute difference that triggers a difference, in digits of round (1 = 0.1 difference, 2 = 0.01 difference, 3 = 0.001).}
 
 \item{proportional.diff}{Should minor differences between cells be judged on an absolute basis (\code{FALSE}) or a proportional basis (\code{TRUE}). \code{FALSE} is useful for identifying a level of decimal dust that we don't want to worry about when diff-ing (e.g., "If the differences is in the 1000ths place or smaller, I don't care"). \code{TRUE} is useful when a sheet contains values of varying magnitudes, as it allows specifying proprotional changes that should be ignored when diffing (e.g., "If the value changed by less than 0.1\%, I don't care).}
-
-\item{extra_format_fun}{Optional function to apply additional formatting, allowing users to specify additional
-calls of \code{addStyle()} (or other openxslx functions, like setting column width). First argument must be the workbook
-object this function makes changes to; second argument must be the name of the worksheet this function makes
-changes to}
-
-\item{...}{Additional arguments passed to \code{extra_format_fun}}
 }
 \description{
-Compares a single sheet between two files, supports providing additional formatting
-in the form of the optional \code{extra_format_fun} argument. For more complex use cases (e.g.,
-multiple sheet, pre-comparison formatting to compare only specific regions, etc) \code{excel_diff} can
-be used as a simple template for writing your own function. Small numeric differences between cell values can be the result of happenstance ("decimal dust") - the \code{digits.signif} and \code{proportional.diff} arguments can control behavior to ignore minor numeric differences.
+Compares a single sheet between two files, creating a new file that uses the formatting of
+the existing sheets (except highlighting) and highlights cells that differed.
+Small numeric differences between cell values can be the result of happenstance ("decimal dust") - the \code{digits.signif} and \code{proportional.diff} arguments can control behavior to ignore minor numeric differences.
 }
 \examples{
 \dontrun{
-filename.1 = "Documents/WDFW FRAM team work/NOF material/NOF 2024/FRAM/Chin1124.xlsx"
-filename.2 = "Documents/WDFW FRAM team work/NOF material/NOF 2024/NOF 2/Chin2524.xlsx"
+filename.1 = "Chin1124.xlsx"
+filename.2 = "Chin2524.xlsx"
 
 excel_diff(file.1 = filename.1,
           file.2 = filename.2,
-          results.name = "Documents/WDFW FRAM team work/NOF material/NOF 2024/test1.xlsx",
+          results.name = "Chin1124 vs Chin 2524.xlsx",
           sheet.name = "ER_ESC_Overview_New"
-)
-
-## create function to add in some additional formatting:
-extra_form_fun = function(wb, sheet){
- ## add bold and increased size for the first two rows.
- openxlsx::addStyle(wb, sheet,
-                    style = openxlsx::createStyle(fontSize = 16, textDecoration = "Bold"),
-                    rows = 1:2, cols = 1:8, gridExpand = TRUE,
-                    stack = TRUE)
- ## add thin inner cell borders
- add_cell_borders(wb, sheet,
-                  block.ranges = c("B3:H34") )
- ## add thick outer borders
- add_cell_borders(wb, sheet,
-                  block.ranges = c("A2", "B1:D2", "E1:H2",
-                                   "A3:A34", "B3:D34", "E3:H34",
-                                   "D36:H37"),
-                  border.thickness = "medium")
-}
-
-excel_diff(file.1 = filename.1,
-          file.2 = filename.2,
-          results.name = "Documents/WDFW FRAM team work/NOF material/NOF 2024/test2.xlsx",
-          sheet.name = "ER_ESC_Overview_New",
-          extra_format_fun = extra_form_fun
 )
 }
 }

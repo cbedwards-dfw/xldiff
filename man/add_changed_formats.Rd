@@ -11,10 +11,9 @@ add_changed_formats(
   rows.invert = NULL,
   cols.invert = NULL,
   df.invert = NULL,
-  nofillStyle = NULL,
-  changeStyle = NULL,
-  posStyle = NULL,
-  negStyle = NULL
+  change.color = "#E1C0FF",
+  pos.color = "#FFC7CE",
+  neg.color = "#C6EFCE"
 )
 }
 \arguments{
@@ -28,15 +27,13 @@ add_changed_formats(
 
 \item{cols.invert}{Optional vector of column numbers to invert color scheme for increase vs decrease.}
 
-\item{df.invert}{Optional data frame with \verb{$row} and \verb{$col} entries to indentify individual cells to invert color schemes for increase vs decrease. Defaults to NULL.}
+\item{df.invert}{Optional data frame with \verb{$row} and \verb{$col} entries to identify individual cells to invert color schemes for increase vs decrease. Defaults to NULL.}
 
-\item{nofillStyle}{Optional openxlsx style object for cells with no changes flagged. Default has black text, white foreground. Create custom style with \code{openxlsx::createStyle()}.}
+\item{change.color}{Hex code for color to highlight cells that changed (and were not numerics). Defaults to lavendar ("#E1C0FF").}
 
-\item{changeStyle}{As \code{nofillStyle}, but for non-numeric cells with changed values. Default has black text, light purple forecround.}
+\item{pos.color}{As \code{change.color}, but for numeric cells that increase in value. Defaults to coral ("#E1C0FF").}
 
-\item{posStyle}{As \code{nofillStyle}, but for numeric cells that increase in value. Default has black text, light coral foreground.}
-
-\item{negStyle}{As \code{nofillStyle}, but for numeric cells that decrease in value. Default has black text, light green foreground.}
+\item{neg.color}{As \code{change.color}, but for numeric cells that decrease in value. Defaults to light green ("#C6EFCE")}
 }
 \description{
 Highlights cells that changed, coloring differently for increasing, decreasing, and non-numeric cells.

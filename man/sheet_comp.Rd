@@ -37,12 +37,12 @@ absolute value (\code{FALSE}) or proportional changes (\code{TRUE}). For example
 \dontrun{
 ## using palmerpenguins data to simulate spreadsheets
 library(palmerpenguins)
-t1 = t2 = head(penguins)
+t1 <- t2 <- head(penguins)
 ## change island variable to characters for easier modification
-t2$island = t1$island = as.character(t1$island)
+t2$island <- t1$island <- as.character(t1$island)
 ## change several entries in the second version
-t2$island[3] = "Scotland"
-t2$flipper_length_mm[1] = 18
+t2$island[3] <- "Scotland"
+t2$flipper_length_mm[1] <- 18
 sheet_comp(t1, t2, digits.signif = 4)
 }
 }
