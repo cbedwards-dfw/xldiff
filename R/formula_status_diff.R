@@ -4,7 +4,7 @@
 #'
 #' @inheritParams excel_diff_table
 #'
-#' @return Nothing
+#' @return invisibly returns dataframe of the cell address and before/after formulas for cases in which a formula was present in both files but differed.
 #' @export
 #'
 #' @examples

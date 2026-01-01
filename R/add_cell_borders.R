@@ -1,3 +1,4 @@
+#' `r lifecycle::badge("deprecated")`
 #' Adds cell borders to openxlsx spreadsheet
 #'
 #' Update: `excel_diff` now includes formatting! This function should hopefully be less necessary.

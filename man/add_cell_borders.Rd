@@ -2,7 +2,8 @@
 % Please edit documentation in R/add_cell_borders.R
 \name{add_cell_borders}
 \alias{add_cell_borders}
-\title{Adds cell borders to openxlsx spreadsheet}
+\title{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+Adds cell borders to openxlsx spreadsheet}
 \usage{
 add_cell_borders(
   wb,

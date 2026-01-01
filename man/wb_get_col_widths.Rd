@@ -2,7 +2,8 @@
 % Please edit documentation in R/wb_get_col_widths.R
 \name{wb_get_col_widths}
 \alias{wb_get_col_widths}
-\title{Get column widths of openxlsx2 Workbook sheet}
+\title{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+Get column widths of openxlsx2 Workbook sheet}
 \usage{
 wb_get_col_widths(wb, sheet = openxlsx2::current_sheet())
 }

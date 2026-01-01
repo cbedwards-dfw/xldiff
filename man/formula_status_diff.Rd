@@ -14,7 +14,7 @@ formula_status_diff(file_1, file_2, sheet_name)
 \item{sheet_name}{Character string of a single excel sheet to compare between the files. (Unlike \code{excel_diff}, only one sheet can be compared at a time)}
 }
 \value{
-Nothing
+invisibly returns dataframe of the cell address and before/after formulas for cases in which a formula was present in both files but differed.
 }
 \description{
 Identifies if one or more cells changed from having a formula to not between two excel sheets.

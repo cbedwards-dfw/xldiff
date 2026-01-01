@@ -2,7 +2,8 @@
 % Please edit documentation in R/cells_stylize.R
 \name{cells_stylize}
 \alias{cells_stylize}
-\title{Apply style to worksheet based on one or more excel-style cell ranges}
+\title{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+Apply style to worksheet based on one or more excel-style cell ranges}
 \usage{
 cells_stylize(wb, sheet, style, block_ranges, stack = TRUE)
 }
@@ -18,5 +19,6 @@ cells_stylize(wb, sheet, style, block_ranges, stack = TRUE)
 \item{stack}{Should style be appended to existing styles (\code{TRUE}) or replace existing styles (\code{FALSE}). Defaults to \code{TRUE}.}
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 Apply style to worksheet based on one or more excel-style cell ranges
 }

@@ -1,3 +1,4 @@
+#' `r lifecycle::badge("experimental")`
 #' Get column widths of openxlsx2 Workbook sheet
 #'
 #' Code by Jan Marvin. This function will likely be superceded by a function in openxlsx2 in the future.

@@ -1,3 +1,4 @@
+#' `r lifecycle::badge("deprecated")`
 #' Apply style to worksheet based on one or more excel-style cell ranges
 #'
 #' @inheritParams add_cell_borders
