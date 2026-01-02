@@ -6,6 +6,8 @@
 #' @param sheet_name Character string of a single excel sheet to compare between the files. (Unlike `excel_diff`, only one sheet can be compared at a time)
 #' @inheritParams sheet_comp
 #'
+#' @seealso [excel_diff()], [excel_diff_tibble()]
+#'
 #' @return flextable object.
 #' @export
 #'

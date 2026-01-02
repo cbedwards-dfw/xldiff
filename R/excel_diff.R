@@ -13,7 +13,8 @@
 #' @param sheet_name_file_2 OPTIONAL. Matching sheet names to `sheet_name` but for file 2. Use only if the two files have matching sheets with different names. Defaults to NULL.
 #' @inheritParams sheet_comp
 #' @param extra_width How much extra width should be added to columns that changed? Helpful to improve readability, since changed cells have longer entries. Numeric, defaults to 0.4.
-
+#'
+#' @seealso [excel_diff_table()], [excel_diff_tibble()]
 #'
 #' @export
 #'

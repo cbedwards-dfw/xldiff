@@ -53,3 +53,6 @@ excel_diff(
 )
 }
 }
+\seealso{
+\code{\link[=excel_diff_table]{excel_diff_table()}}, \code{\link[=excel_diff_tibble]{excel_diff_tibble()}}
+}

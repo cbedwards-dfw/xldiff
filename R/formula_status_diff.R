@@ -52,7 +52,7 @@ formula_diff <- function(file_1, file_2, sheet_name) {
       dplyr::mutate(sheet = sheet_name[i.sheet])
 
     differing_formulas_df <- differing_df |>
-      na.omit()
+      stats::na.omit()
 
     if(length(sheet_name) == 1){
       cli::cli_h2("Checking for changes in formula status (was formula in one sheet, not in the other)")
