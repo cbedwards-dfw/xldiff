@@ -1,11 +1,12 @@
-# Apply style to worksheet based on one or more excel-style cell ranges
+# **\[deprecated\]** Apply style to worksheet based on one or more excel-style cell ranges
 
-Apply style to worksheet based on one or more excel-style cell ranges
+**\[deprecated\]** Apply style to worksheet based on one or more
+excel-style cell ranges
 
 ## Usage
 
 ``` r
-cells_stylize(wb, sheet, style, block.ranges, stack = TRUE)
+cells_stylize(wb, sheet, style, block_ranges, stack = TRUE)
 ```
 
 ## Arguments
@@ -28,7 +29,7 @@ cells_stylize(wb, sheet, style, block.ranges, stack = TRUE)
   [`?openxlsx::createStyle`](https://rdrr.io/pkg/openxlsx/man/createStyle.html)
   for details.
 
-- block.ranges:
+- block_ranges:
 
   One or more cell ranges specified in excel format (e.g.
   `c("A1:D5, "B6", "A8:D8")`)

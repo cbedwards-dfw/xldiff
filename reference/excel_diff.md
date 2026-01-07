@@ -1,124 +1,100 @@
 # Minimal spreadsheet comparison function
 
-Compares a single sheet between two files, supports providing additional
-formatting in the form of the optional `extra_format_fun` argument. For
-more complex use cases (e.g., multiple sheet, pre-comparison formatting
-to compare only specific regions, etc) `excel_diff` can be used as a
-simple template for writing your own function. Small numeric differences
-between cell values can be the result of happenstance ("decimal dust") -
-the `digits.signif` and `proportional.diff` arguments can control
-behavior to ignore minor numeric differences.
+Compares a single sheet between two files, creating a new file that uses
+the formatting of the existing sheets (except highlighting) and
+highlights cells that differed. Small numeric differences between cell
+values can be the result of happenstance ("decimal dust") - the
+`digits_signif` and `proportional.diff` arguments can control behavior
+to ignore minor numeric differences.
 
 ## Usage
 
 ``` r
 excel_diff(
-  file.1,
-  file.2,
-  results.name,
-  sheet.name,
-  digits.signif = 3,
-  proportional.diff = TRUE,
-  extra_format_fun = NULL,
-  ...
+  file_1,
+  file_2,
+  results_name,
+  sheet_name,
+  sheet_name_file_2 = NULL,
+  proportional_threshold = 0.001,
+  absolute_threshold = NULL,
+  digits_show = 6,
+  extra_width = 0.2
 )
 ```
 
 ## Arguments
 
-- file.1:
+- file_1:
 
   Filename (including path) for first file to compare
 
-- file.2:
+- file_2:
 
   Filename (including path) for second file to compare
 
-- results.name:
+- results_name:
 
   Name (including path) for file to save comparison to. Must end in
   ".xlsx"
 
-- sheet.name:
+- sheet_name:
 
-  character string of sheet to compare. If the sheets have different
-  names (or to compare two sheets in one file), can take a character
-  vector of length two, with the sheet names from the first and second
-  file in order. In this case, the results file will use the first of
-  the sheet names.
+  Character string of sheet to compare. Can provide vector of character
+  strings to produce comparisons of multiple sheets.
 
-- digits.signif:
+- sheet_name_file_2:
 
-  Numeric, controls the amount of difference a number needs to have to
-  be identified as differing between the two sheets. When
-  `proportional.diff = TRUE`, defines proportional change that triggers
-  a "diff" status, where the number is the number of digits of the
-  proportion (2 = 1% difference, 3 = 0.1% difference, 4 = 0.01%
-  difference). When `proportional.diff = FALSE`, defines the absolute
-  difference that triggers a difference, in digits of round (1 = 0.1
-  difference, 2 = 0.01 difference, 3 = 0.001).
+  OPTIONAL. Matching sheet names to `sheet_name` but for file 2. Use
+  only if the two files have matching sheets with different names.
+  Defaults to NULL.
 
-- proportional.diff:
+- proportional_threshold:
 
-  Should minor differences between cells be judged on an absolute basis
-  (`FALSE`) or a proportional basis (`TRUE`). `FALSE` is useful for
-  identifying a level of decimal dust that we don't want to worry about
-  when diff-ing (e.g., "If the differences is in the 1000ths place or
-  smaller, I don't care"). `TRUE` is useful when a sheet contains values
-  of varying magnitudes, as it allows specifying proprotional changes
-  that should be ignored when diffing (e.g., "If the value changed by
-  less than 0.1%, I don't care).
+  Sets a threshold of proportional change below which differences should
+  be ignored. For example, a value of 0.1 means any changes less than
+  10% will not be flagged as having changed. `proportional_threshold`
+  will override this value and behavior if it is provided. Numeric,
+  defaults to 0.001 (0.1% change).
 
-- extra_format_fun:
+- absolute_threshold:
 
-  Optional function to apply additional formatting, allowing users to
-  specify additional calls of
-  [`addStyle()`](https://rdrr.io/pkg/openxlsx/man/addStyle.html) (or
-  other openxslx functions, like setting column width). First argument
-  must be the workbook object this function makes changes to; second
-  argument must be the name of the worksheet this function makes changes
-  to
+  Optional. Sets a threshold of absolute change below which differences
+  should be ignored. For example, a value of 0.1 means any changes less
+  than 0.1 will not be flagged as having changed. If provided, will
+  override `proportional_threshold`. Numeric, defaults to NULL.
 
-- ...:
+- digits_show:
 
-  Additional arguments passed to `extra_format_fun`
+  When there is a change in number values, how many digits should be
+  shown in `## ---> ##`? Numeric, defaults to 6. Recommend not making
+  this so small that flagged changes don't get printed (e.g., if this is
+  2 and `proportional_threshold` is 0.001, 0.1% changes will get
+  flagged, but only the first two digits will get shown).
+
+- extra_width:
+
+  How much extra width should be added to columns that changed? Helpful
+  to improve readability, since changed cells have longer entries.
+  Numeric, defaults to 0.4.
+
+## See also
+
+[`excel_diff_table()`](https://cbedwards-dfw.github.io/xldiff/reference/excel_diff_table.md),
+[`excel_diff_tibble()`](https://cbedwards-dfw.github.io/xldiff/reference/excel_diff_tibble.md)
 
 ## Examples
 
 ``` r
 if (FALSE) { # \dontrun{
-filename.1 = "Documents/WDFW FRAM team work/NOF material/NOF 2024/FRAM/Chin1124.xlsx"
-filename.2 = "Documents/WDFW FRAM team work/NOF material/NOF 2024/NOF 2/Chin2524.xlsx"
+filename_1 <- "Chin1124.xlsx"
+filename_2 <- "Chin2524.xlsx"
 
-excel_diff(file.1 = filename.1,
-          file.2 = filename.2,
-          results.name = "Documents/WDFW FRAM team work/NOF material/NOF 2024/test1.xlsx",
-          sheet.name = "ER_ESC_Overview_New"
-)
-
-## create function to add in some additional formatting:
-extra_form_fun = function(wb, sheet){
- ## add bold and increased size for the first two rows.
- openxlsx::addStyle(wb, sheet,
-                    style = openxlsx::createStyle(fontSize = 16, textDecoration = "Bold"),
-                    rows = 1:2, cols = 1:8, gridExpand = TRUE,
-                    stack = TRUE)
- ## add thin inner cell borders
- add_cell_borders(wb, sheet,
-                  block.ranges = c("B3:H34") )
- ## add thick outer borders
- add_cell_borders(wb, sheet,
-                  block.ranges = c("A2", "B1:D2", "E1:H2",
-                                   "A3:A34", "B3:D34", "E3:H34",
-                                   "D36:H37"),
-                  border.thickness = "medium")
-}
-
-excel_diff(file.1 = filename.1,
-          file.2 = filename.2,
-          results.name = "Documents/WDFW FRAM team work/NOF material/NOF 2024/test2.xlsx",
-          sheet.name = "ER_ESC_Overview_New",
-          extra_format_fun = extra_form_fun
+excel_diff(
+  file_1 = filename_1,
+  file_2 = filename_2,
+  results.name = "Chin1124 vs Chin 2524.xlsx",
+  sheet_name = "ER_ESC_Overview_New"
 )
 } # }
 ```

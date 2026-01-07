@@ -1,6 +1,6 @@
 # Stripped down version of sheet_comp
 
-Stripped down version of sheet_comp
+Compares for perfect match, returns single matrix
 
 ## Usage
 

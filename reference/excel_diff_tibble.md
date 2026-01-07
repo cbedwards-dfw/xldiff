@@ -1,23 +1,19 @@
-# Diff excel sheets and show table
+# Diff excel sheet and return tibble
 
-Similar to excel_diff, but returns flextable that can be displayed and
-navigated in the Rstudio viewer. Only shows rows that have changed. For
-every row with changes, provides a row of before and after, highlighting
-changed vlaues (red for the value in file_1, green for the value in
-file_2)."ROWS" column identifies excel row number and columns identify
-excel column names. Defaults to flagging changes of at least 0.1% from
-`file_1` to `file_2` (`proportional.diff = TRUE`, `digits.signif = 3`).
+Compares sheet from two excel files and returns a tibble of the diff.
 
 ## Usage
 
 ``` r
-excel_diff_table(
+excel_diff_tibble(
   file_1,
   file_2,
   sheet_name,
   proportional_threshold = 0.001,
   absolute_threshold = NULL,
-  digits_show = 6
+  digits_show = 6,
+  trim_cols = FALSE,
+  diff_only = FALSE
 )
 ```
 
@@ -59,23 +55,16 @@ excel_diff_table(
   2 and `proportional_threshold` is 0.001, 0.1% changes will get
   flagged, but only the first two digits will get shown).
 
-## Value
+- trim_cols:
 
-flextable object.
+  Remove unchanged columns? Useful with wide dataframes when viewing
+  results in the console. Defaults to FALSE.
+
+- diff_only:
+
+  Show only the changed values? defaults to FALSE.
 
 ## See also
 
 [`excel_diff()`](https://cbedwards-dfw.github.io/xldiff/reference/excel_diff.md),
-[`excel_diff_tibble()`](https://cbedwards-dfw.github.io/xldiff/reference/excel_diff_tibble.md)
-
-## Examples
-
-``` r
-if (FALSE) { # \dontrun{
-excel_diff_table(
-  file_1 = "C:/Repos/test file 1.xlsx",
-  file_2 = "C:/Repos/test file 2.xlsx",
-  sheet = "Sheet1"
-)
-} # }
-```
+[`excel_diff_table()`](https://cbedwards-dfw.github.io/xldiff/reference/excel_diff_table.md)

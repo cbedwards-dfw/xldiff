@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">xldiff</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -16,6 +16,7 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/cbedwards-dfw/xldiff/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
@@ -45,14 +46,14 @@
           <code><a href="add_cell_borders.html">add_cell_borders()</a></code>
 
         </dt>
-        <dd>Adds cell borders to openxlsx spreadsheet</dd>
+        <dd><a href="https://lifecycle.r-lib.org/articles/stages.html#deprecated" class="external-link"><img src="figures/lifecycle-deprecated.svg" alt="[Deprecated]"></a> Adds cell borders to openxlsx spreadsheet</dd>
 
         <dt>
 
           <code><a href="add_changed_formats.html">add_changed_formats()</a></code>
 
         </dt>
-        <dd>Format <code>openxlsx</code> worksheet based on changes</dd>
+        <dd>Format <code>openxlsx2</code> worksheet based on changes</dd>
 
         <dt>
 
@@ -64,9 +65,9 @@
         <dt>
 
           <code><a href="cells_stylize.html">cells_stylize()</a></code>
-
+          <span class="badge lifecycle lifecycle-deprecated">deprecated</span>
         </dt>
-        <dd>Apply style to worksheet based on one or more excel-style cell ranges</dd>
+        <dd><a href="https://lifecycle.r-lib.org/articles/stages.html#deprecated" class="external-link"><img src="figures/lifecycle-deprecated.svg" alt="[Deprecated]"></a> Apply style to worksheet based on one or more excel-style cell ranges</dd>
 
         <dt>
 
@@ -91,10 +92,24 @@
 
         <dt>
 
-          <code><a href="formula_status_diff.html">formula_status_diff()</a></code>
+          <code><a href="excel_diff_tibble.html">excel_diff_tibble()</a></code>
+
+        </dt>
+        <dd>Diff excel sheet and return tibble</dd>
+
+        <dt>
+
+          <code><a href="formula_diff.html">formula_diff()</a></code>
 
         </dt>
         <dd>Compare two sheets to see if formula use changed</dd>
+
+        <dt>
+
+          <code><a href="mat_to_a1.html">mat_to_a1()</a></code>
+
+        </dt>
+        <dd>Provide Excel addresses from matrix of logicals</dd>
 
         <dt>
 
@@ -116,6 +131,13 @@
 
         </dt>
         <dd>Stripped down version of sheet_comp</dd>
+
+        <dt>
+
+          <code><a href="wb_get_col_widths.html">wb_get_col_widths()</a></code>
+
+        </dt>
+        <dd><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="figures/lifecycle-experimental.svg" alt="[Experimental]"></a> Get column widths of openxlsx2 Workbook sheet</dd>
       </dl></div>
   </main></div>
 
