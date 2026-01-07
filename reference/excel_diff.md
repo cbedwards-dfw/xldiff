@@ -19,7 +19,8 @@ excel_diff(
   proportional_threshold = 0.001,
   absolute_threshold = NULL,
   digits_show = 6,
-  extra_width = 0.2
+  verbose = FALSE,
+  extra_width = NULL
 )
 ```
 
@@ -71,6 +72,11 @@ excel_diff(
   this so small that flagged changes don't get printed (e.g., if this is
   2 and `proportional_threshold` is 0.001, 0.1% changes will get
   flagged, but only the first two digits will get shown).
+
+- verbose:
+
+  Should sheet names be listed as they are diffed? Logical, defaults to
+  TRUE
 
 - extra_width:
 

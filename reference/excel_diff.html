@@ -54,7 +54,8 @@ Small numeric differences between cell values can be the result of happenstance 
 <span>  proportional_threshold <span class="op">=</span> <span class="fl">0.001</span>,</span>
 <span>  absolute_threshold <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  digits_show <span class="op">=</span> <span class="fl">6</span>,</span>
-<span>  extra_width <span class="op">=</span> <span class="fl">0.2</span></span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  extra_width <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -92,6 +93,10 @@ Small numeric differences between cell values can be the result of happenstance 
 
 <dt id="arg-digits-show">digits_show<a class="anchor" aria-label="anchor" href="#arg-digits-show"></a></dt>
 <dd><p>When there is a change in number values, how many digits should be shown in <code>## ---&gt; ##</code>? Numeric, defaults to 6. Recommend not making this so small that flagged changes don't get printed (e.g., if this is 2 and <code>proportional_threshold</code> is 0.001, 0.1% changes will get flagged, but only the first two digits will get shown).</p></dd>
+
+
+<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
+<dd><p>Should sheet names be listed as they are diffed? Logical, defaults to TRUE</p></dd>
 
 
 <dt id="arg-extra-width">extra_width<a class="anchor" aria-label="anchor" href="#arg-extra-width"></a></dt>
