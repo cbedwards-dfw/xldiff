@@ -1,6 +1,6 @@
 Package: xldiff
 Title: Compare excel sheets
-Version: 0.1.0
+Version: 0.2.0
 Authors@R: 
     person("Collin", "Edwards", , "Collin.Edwards@dfw.wa.gov", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-4937-5159"))
@@ -10,14 +10,16 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Suggests: 
+    openxlsx,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Imports: 
     cli,
     dplyr,
     flextable,
-    methods,
-    openxlsx,
+    glue,
+    lifecycle,
+    openxlsx2 (>= 1.22.0.9000),
     purrr,
     readxl,
     rlang,
@@ -25,3 +27,5 @@ Imports:
     tidyr,
     tidyxl
 URL: https://framverse.r-universe.dev/xldiff, https://github.com/cbedwards-dfw/xldiff, https://cbedwards-dfw.github.io/xldiff/
+Remotes: 
+    JanMarvin/openxlsx2

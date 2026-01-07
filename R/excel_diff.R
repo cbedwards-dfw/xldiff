@@ -1,106 +1,156 @@
-
-
 #' Minimal spreadsheet comparison function
 #'
-#' Compares a single sheet between two files, supports providing additional formatting
-#' in the form of the optional `extra_format_fun` argument. For more complex use cases (e.g.,
-#' multiple sheet, pre-comparison formatting to compare only specific regions, etc) `excel_diff` can
-#' be used as a simple template for writing your own function. Small numeric differences between cell values can be the result of happenstance ("decimal dust") - the `digits.signif` and `proportional.diff` arguments can control behavior to ignore minor numeric differences.
+#' Compares a single sheet between two files, creating a new file that uses the formatting of
+#' the existing sheets (except highlighting) and highlights cells that differed.
+#' Small numeric differences between cell values can be the result of happenstance ("decimal dust") - the `digits_signif` and `proportional.diff` arguments can control behavior to ignore minor numeric differences.
 #'
-#' @param file.1 Filename (including path) for first file to compare
-#' @param file.2 Filename (including path) for second file to compare
-#' @param results.name Name (including path) for file to save comparison to. Must end in ".xlsx"
-#' @param sheet.name character string of sheet to compare. If the sheets have different names (or to compare two sheets in one file), can take a character vector of length two, with the sheet names from the first and second file in order. In this case, the results file will use the first of the sheet names.
-#' @param digits.signif Numeric, controls the amount of difference a number needs to have to be identified as differing between the two sheets. When `proportional.diff = TRUE`, defines proportional change that triggers a "diff" status, where the number is the number of digits of the proportion (2 = 1% difference, 3 = 0.1% difference, 4 = 0.01% difference). When `proportional.diff = FALSE`, defines the absolute difference that triggers a difference, in digits of round (1 = 0.1 difference, 2 = 0.01 difference, 3 = 0.001).
-#' @param proportional.diff Should minor differences between cells be judged on an absolute basis (`FALSE`) or a proportional basis (`TRUE`). `FALSE` is useful for identifying a level of decimal dust that we don't want to worry about when diff-ing (e.g., "If the differences is in the 1000ths place or smaller, I don't care"). `TRUE` is useful when a sheet contains values of varying magnitudes, as it allows specifying proprotional changes that should be ignored when diffing (e.g., "If the value changed by less than 0.1%, I don't care).
 #'
-#' @param extra_format_fun Optional function to apply additional formatting, allowing users to specify additional
-#' calls of `addStyle()` (or other openxslx functions, like setting column width). First argument must be the workbook
-#' object this function makes changes to; second argument must be the name of the worksheet this function makes
-#' changes to
-#' @param ... Additional arguments passed to `extra_format_fun`
+#'
+#' @param file_1 Filename (including path) for first file to compare
+#' @param file_2 Filename (including path) for second file to compare
+#' @param results_name Name (including path) for file to save comparison to. Must end in ".xlsx"
+#' @param sheet_name Character string of sheet to compare. Can provide vector of character strings to produce comparisons of multiple sheets.
+#' @param sheet_name_file_2 OPTIONAL. Matching sheet names to `sheet_name` but for file 2. Use only if the two files have matching sheets with different names. Defaults to NULL.
+#' @inheritParams sheet_comp
+#' @param extra_width How much extra width should be added to columns that changed? Helpful to improve readability, since changed cells have longer entries. Numeric, defaults to 0.4.
+#' @param verbose Should sheet names be listed as they are diffed? Logical, defaults to TRUE
+#'
+#' @seealso [excel_diff_table()], [excel_diff_tibble()]
 #'
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' filename.1 = "Documents/WDFW FRAM team work/NOF material/NOF 2024/FRAM/Chin1124.xlsx"
-#'filename.2 = "Documents/WDFW FRAM team work/NOF material/NOF 2024/NOF 2/Chin2524.xlsx"
+#' filename_1 <- "Chin1124.xlsx"
+#' filename_2 <- "Chin2524.xlsx"
 #'
-#'excel_diff(file.1 = filename.1,
-#'           file.2 = filename.2,
-#'           results.name = "Documents/WDFW FRAM team work/NOF material/NOF 2024/test1.xlsx",
-#'           sheet.name = "ER_ESC_Overview_New"
-#')
-#'
-#' ## create function to add in some additional formatting:
-#' extra_form_fun = function(wb, sheet){
-#'  ## add bold and increased size for the first two rows.
-#'  openxlsx::addStyle(wb, sheet,
-#'                     style = openxlsx::createStyle(fontSize = 16, textDecoration = "Bold"),
-#'                     rows = 1:2, cols = 1:8, gridExpand = TRUE,
-#'                     stack = TRUE)
-#'  ## add thin inner cell borders
-#'  add_cell_borders(wb, sheet,
-#'                   block.ranges = c("B3:H34") )
-#'  ## add thick outer borders
-#'  add_cell_borders(wb, sheet,
-#'                   block.ranges = c("A2", "B1:D2", "E1:H2",
-#'                                    "A3:A34", "B3:D34", "E3:H34",
-#'                                    "D36:H37"),
-#'                   border.thickness = "medium")
-#'}
-#'
-#'excel_diff(file.1 = filename.1,
-#'           file.2 = filename.2,
-#'           results.name = "Documents/WDFW FRAM team work/NOF material/NOF 2024/test2.xlsx",
-#'           sheet.name = "ER_ESC_Overview_New",
-#'           extra_format_fun = extra_form_fun
-#')
-#'}
-
-
-
-excel_diff = function(file.1, file.2, results.name, sheet.name,
-                      digits.signif = 3,
-                      proportional.diff = TRUE,
-                      extra_format_fun = NULL, ...){
-
-  if(!all(grepl(".xls.?$", c(file.1, file.2, results.name)))){
-    cli::cli_abort("`file.1`, `file.2`, and `results.name` must end in `.xlsx` or `.xls`.")
+#' excel_diff(
+#'   file_1 = filename_1,
+#'   file_2 = filename_2,
+#'   results.name = "Chin1124 vs Chin 2524.xlsx",
+#'   sheet_name = "ER_ESC_Overview_New"
+#' )
+#' }
+excel_diff <- function(file_1, file_2, results_name, sheet_name,
+                       sheet_name_file_2 = NULL,
+                       proportional_threshold = 0.001,
+                       absolute_threshold = NULL,
+                       digits_show = 6,
+                       verbose = FALSE,
+                       extra_width = NULL) {
+  validate_character(file_1, n = 1)
+  validate_character(file_2, n = 1)
+  validate_character(results_name, n = 1)
+  if (!all(grepl(".xls.?$", c(file_1, file_2, results_name)))) {
+    cli::cli_abort("`file_1`, `file_2`, and `results_name` must end in `.xlsx` or `.xls`.")
   }
-  if(!is.null(extra_format_fun) & !is.function(extra_format_fun)){
-    cli::cli_abort("If provided, `extra_format_fun` must be a function.")
+  validate_character(sheet_name)
+  if (!is.null(sheet_name_file_2)) {
+    validate_character(sheet_name_file_2)
   }
-  if(length(sheet.name) == 1){
-    sheet.name = c(sheet.name, sheet.name)
+  if (!is.null(sheet_name_file_2) && (!is.character(sheet_name_file_2) | length(sheet_name_file_2) == length(sheet_name))) {
+    cli::cli_abort("If provided, `sheet_name_file_2` must be a character string of the same length as `sheet_name`!")
+  }
+  validate_flag(verbose)
+  ## thresholds validated in sheet_comp
+  if(!is.null(extra_width)){
+    validate_numeric(extra_width, n = 1, min = 0, max = 1)
   }
 
-  f1 = readxl::read_excel(file.1, sheet = sheet.name[1], col_names = FALSE,
-                          .name_repair = "unique_quiet")
-  f2 = readxl::read_excel(file.2, sheet = sheet.name[2], col_names = FALSE,
-                          .name_repair = "unique_quiet")
-
-  #carry out sheet comparison
-  sheet.comp = sheet_comp(f1, f2, digits.signif = digits.signif, proportional.diff = proportional.diff)
-
-  ## create workbook
-  wb = openxlsx::createWorkbook()
-  ## add in our sheet, fill in with the comparison information
-  openxlsx::addWorksheet(wb, sheetName = sheet.name[1])
-  openxlsx::writeData(wb, sheet.name[1], x = sheet.comp$sheet.diff, colNames = FALSE, keepNA = FALSE)
-
-  ## support adding in additional formatting
-  if(! is.null(extra_format_fun)){
-    extra_format_fun(wb, sheet.name[1], ...)
+  if (is.null(sheet_name_file_2)) {
+    sheet_name_file_2 <- sheet_name
   }
 
-  ## highlight cells that changes
-  add_changed_formats(wb, cur.sheet = sheet.name[1], sheet.comp = sheet.comp)
+  ## The implementation here is indirect (copy sheet styles to empty sheet, cloning that to new workbook,
+  ## adding in diff data)
+  ## This gets around issues with excel files that have non-standard XML components,
+  ## which is common in the excel files the FRAM team works with.
 
+  wb <- openxlsx2::wb_load(file_1) |>
+    ## add a temporary "style storage" sheet
+    openxlsx2::wb_add_worksheet(sheet = "style_storage")
+  wb2 <- openxlsx2::wb_load(file_2)
 
-  openxlsx::saveWorkbook(wb, file = results.name, overwrite = TRUE)
+  wb_new <- openxlsx2::wb_workbook()
+
+  ## sheet validation
+  file_1_sheets <- wb |>
+    openxlsx2::wb_get_sheet_names()
+  file_2_sheets <- wb2 |>
+    openxlsx2::wb_get_sheet_names()
+  if (!all(sheet_name %in% file_1_sheets)) {
+    cli::cli_abort("`sheet_name` must be in each file! The following sheet names are missing from file 1: {setdiff(sheet_name, file_1_sheets)}")
+  }
+  if (!all(sheet_name %in% file_1_sheets)) {
+    cli::cli_abort("`sheet_name` must be in each file! The following sheet names are missing from file 2: {setdiff(sheet_name_file_2, file_2_sheets)}")
+  }
+
+  for (i.sheet in seq_along(sheet_name)) {
+    if(verbose){
+      cli::cli_alert("Diffing {sheet_name[i.sheet]}...")
+    }
+    wb <- wb |>
+      openxlsx2::wb_clone_sheet_style(
+        from = sheet_name[i.sheet],
+        to = "style_storage"
+      )
+
+    f1 <- openxlsx2::wb_to_df(wb,
+                              sheet = sheet_name[i.sheet],
+                              col_names = FALSE,
+                              na = NA
+    )
+
+    f2 <- openxlsx2::wb_to_df(wb2,
+                              sheet = sheet_name_file_2[i.sheet],
+                              col_names = FALSE,
+                              na = NA
+    )
+
+    sheet_comp <- sheet_comp(f1, f2,
+                             proportional_threshold = proportional_threshold,
+                             absolute_threshold = absolute_threshold
+    )
+
+    all_dims <- dim(f1)
+    all_dims_a1 <- openxlsx2::wb_dims(1:all_dims[1], 1:all_dims[2])
+
+    suppressWarnings({
+      wb_new <- wb_new |>
+        openxlsx2::wb_clone_worksheet(
+          old = "style_storage",
+          new = sheet_name[i.sheet],
+          from = wb
+        )
+    })
+    wb_new <- wb_new |>
+      openxlsx2::wb_add_fill(
+        sheet = sheet_name[i.sheet],
+        dims = all_dims_a1,
+        color = NULL
+      ) |>
+      openxlsx2::wb_add_data(
+        sheet = sheet_name[i.sheet],
+        x = sheet_comp$sheet_diff, na = "",
+        col_names = FALSE
+      ) |>
+      add_changed_formats(
+        cur_sheet = sheet_name[i.sheet],
+        sheet_comp = sheet_comp
+      )
+
+    ## widen columns with corrections in them
+    if(!is.null(extra_width)){
+      cols_changed <- (apply(sheet_comp$mat_changed, 2, any))
+      col_widths <- wb_get_col_widths(wb, sheet = sheet_name[i.sheet])
+      new_widths <- col_widths$width[1:length(cols_changed)] * (1 + extra_width * cols_changed)
+
+      wb_new <- wb_new |>
+        openxlsx2::wb_set_col_widths(sheet = sheet_name[i.sheet], cols = 1:length(new_widths), widths = new_widths)
+    }
+  }
+
+  suppressWarnings({
+    openxlsx2::wb_save(wb_new, file = results_name, overwrite = TRUE)
+  })
 }
-
-
-

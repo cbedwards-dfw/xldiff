@@ -2,9 +2,10 @@
 % Please edit documentation in R/cells_stylize.R
 \name{cells_stylize}
 \alias{cells_stylize}
-\title{Apply style to worksheet based on one or more excel-style cell ranges}
+\title{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+Apply style to worksheet based on one or more excel-style cell ranges}
 \usage{
-cells_stylize(wb, sheet, style, block.ranges, stack = TRUE)
+cells_stylize(wb, sheet, style, block_ranges, stack = TRUE)
 }
 \arguments{
 \item{wb}{openxlsx workbook object}
@@ -13,10 +14,11 @@ cells_stylize(wb, sheet, style, block.ranges, stack = TRUE)
 
 \item{style}{\code{openxlsx} cell style, created with \code{openxlsx::createStyle()}. This can include text size, bolding or italics, text wrapping, foreground color, text color, etc. See \code{?openxlsx::createStyle} for details.}
 
-\item{block.ranges}{One or more cell ranges specified in excel format (e.g. \verb{c("A1:D5, "B6", "A8:D8")})}
+\item{block_ranges}{One or more cell ranges specified in excel format (e.g. \verb{c("A1:D5, "B6", "A8:D8")})}
 
 \item{stack}{Should style be appended to existing styles (\code{TRUE}) or replace existing styles (\code{FALSE}). Defaults to \code{TRUE}.}
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 Apply style to worksheet based on one or more excel-style cell ranges
 }

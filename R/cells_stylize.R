@@ -1,3 +1,4 @@
+#' `r lifecycle::badge("deprecated")`
 #' Apply style to worksheet based on one or more excel-style cell ranges
 #'
 #' @inheritParams add_cell_borders
@@ -6,12 +7,17 @@
 #'
 #' @export
 #'
-cells_stylize <- function(wb, sheet, style, block.ranges, stack = TRUE){
-  cells.modify = do.call(rbind,
-                           purrr::map(block.ranges,
-                                      .f = cell_range_translate))
-  openxlsx::addStyle(wb, sheet = sheet, style = style,
-                     rows = cells.modify$row,
-                     cols = cells.modify$col,
-                     stack = stack, gridExpand = FALSE)
+cells_stylize <- function(wb, sheet, style, block_ranges, stack = TRUE) {
+  cells_modify <- do.call(
+    rbind,
+    purrr::map(block_ranges,
+      .f = cell_range_translate
+    )
+  )
+  openxlsx::addStyle(wb,
+    sheet = sheet, style = style,
+    rows = cells_modify$row,
+    cols = cells_modify$col,
+    stack = stack, gridExpand = FALSE
+  )
 }

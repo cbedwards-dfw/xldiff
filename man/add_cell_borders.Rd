@@ -2,16 +2,17 @@
 % Please edit documentation in R/add_cell_borders.R
 \name{add_cell_borders}
 \alias{add_cell_borders}
-\title{Adds cell borders to openxlsx spreadsheet}
+\title{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+Adds cell borders to openxlsx spreadsheet}
 \usage{
 add_cell_borders(
   wb,
   sheet,
-  block.ranges,
-  sheet.start = "A1",
-  every.cell = FALSE,
-  border.col = "black",
-  border.thickness = "medium"
+  block_ranges,
+  sheet_start = "A1",
+  every_cell = FALSE,
+  border_col = "black",
+  border_thickness = "medium"
 )
 }
 \arguments{
@@ -19,28 +20,31 @@ add_cell_borders(
 
 \item{sheet}{character corresponding to sheet name of openxlsx workbook object \code{wb}.}
 
-\item{block.ranges}{One or more cell ranges specified in excel format (e.g. \verb{c("A1:D5, "B6", "A8:D8")})}
+\item{block_ranges}{One or more cell ranges specified in excel format (e.g. \verb{c("A1:D5, "B6", "A8:D8")})}
 
-\item{sheet.start}{Optional. If \code{wb$sheet} corresponds to an excel sheet in which the \code{wb$sheet} entries were read starting on a cell other than "A1"
+\item{sheet_start}{Optional. If \code{wb$sheet} corresponds to an excel sheet in which the \code{wb$sheet} entries were read starting on a cell other than "A1"
 (e.g. \code{readxl::read_excel} with range specified or skip provided), provide the top left cell that was read into R in order
 to handle the offsetting, so that you can specify cell ranges based on the original excel file.}
 
-\item{every.cell}{Do we want borders around each individual cell in each cell block (\code{TRUE}), or just around the outer edges of the block (\code{FALSE}). Defaults to \code{FALSE}.}
+\item{every_cell}{Do we want borders around each individual cell in each cell block (\code{TRUE}), or just around the outer edges of the block (\code{FALSE}). Defaults to \code{FALSE}.}
 
-\item{border.col}{Color for border. See \code{?openxlsx::createStyle} for details. Defaults to "black".}
+\item{border_col}{Color for border. See \code{?openxlsx::createStyle} for details. Defaults to "black".}
 
-\item{border.thickness}{Thickness for border. See \code{?openxlsx::createStyle} for details. Common choices: "thin", "thick".}
+\item{border_thickness}{Thickness for border. See \code{?openxlsx::createStyle} for details. Common choices: "thin", "thick".}
 }
 \description{
+Update: \code{excel_diff} now includes formatting! This function should hopefully be less necessary.
+}
+\details{
 When calling \code{sheet_diff()}, creating a new workbook for the diff contents, and
 then coloring to highlight changed cells, the original spreadsheet formatting is lost.
 To facilitate interpretting the diff, it can be useful to recreate the major components of the original
 formatting, especially cell borders. This function adds cell borders, and is designed for ease of use
 when replicating formatting from the original excel file. Blocks of cells to give borders to can be
 specified in the original excel format (e.g. "A1:D5"). For only outside borders around each block (default), use argument
-\code{every.cell = FALSE}. To add all the cell borders within each block to generate a grid appearance, set \code{every.cell = TRUE}.
+\code{every_cell = FALSE}. To add all the cell borders within each block to generate a grid appearance, set \code{every_cell = TRUE}.
 Note that non-border formatting of each cell will not be maintained, but border formatting will be overwritten. When adding
 thin boundaries between inner cells and a thick outer border for a block of cells, first use \code{add_cell_borders} to
-with \code{every.cell = TRUE}, and appropriate border arguments (usually \code{border.thickness = "thin"})
-and then use again with \code{every.cell = FALSE} and appropriate border arguments (usually \code{border.thickness = "medium"}).
+with \code{every_cell = TRUE}, and appropriate border arguments (usually \code{border_thickness = "thin"})
+and then use again with \code{every_cell = FALSE} and appropriate border arguments (usually \code{border_thickness = "medium"}).
 }

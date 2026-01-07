@@ -15,5 +15,5 @@ sheet_comp_basic(t1, t2)
 logical matrix
 }
 \description{
-Stripped down version of sheet_comp
+Compares for perfect match, returns single matrix
 }

@@ -12,14 +12,14 @@
 #' @examples
 #' cell_range_translate("D6")
 #' cell_range_translate("A2:H3")
-cell_range_translate = function(x, #excel cell address or cell range, e.g. "D6" or "D6:BG27"
-                                expand = TRUE, #if TRUE, provides the row and
-                                #            column of all cells in a cell range.
-                                #            If false, just the start and end cells
-                                start = "A1"){ #if the spreadsheet was read in
-  #starting with a cell other than A1, provide here
+cell_range_translate <- function(x, # excel cell address or cell range, e.g. "D6" or "D6:BG27"
+                                 expand = TRUE, # if TRUE, provides the row and
+                                 #            column of all cells in a cell range.
+                                 #            If false, just the start and end cells
+                                 start = "A1") { # if the spreadsheet was read in
+  # starting with a cell other than A1, provide here
   # to translate excel address to appropriate row/col
-  stopifnot(length(x)==1)
+  stopifnot(length(x) == 1)
   stopifnot(class(x) == "character")
 
   ## Todo:
@@ -28,35 +28,35 @@ cell_range_translate = function(x, #excel cell address or cell range, e.g. "D6" 
   ## For reasonable range, present as warning with optional parameter to silence those warnings.
 
 
-  cells = strsplit(x, ":")[[1]]
-  cols.let = strsplit(gsub("[0-9]*", "", cells), "")
-  rows = as.numeric(gsub("[A-Z]*", "", cells))
+  cells <- strsplit(x, ":")[[1]]
+  cols_let <- strsplit(gsub("[0-9]*", "", cells), "")
+  rows <- as.numeric(gsub("[A-Z]*", "", cells))
   ## More intelligent check: make sure entry(s) contain letters and numbers, print exceptions.
-  if(any(unlist(lapply(cols.let, length)) == 0) |
-     any(unlist(lapply(rows, length)) == 0)){
-    cli::cli_abort(paste0("Error translating range: `", x, "` is missing either column letter or row numbers." ))
+  if (any(unlist(lapply(cols_let, length)) == 0) |
+    any(unlist(lapply(rows, length)) == 0)) {
+    cli::cli_abort(paste0("Error translating range: `", x, "` is missing either column letter or row numbers."))
   }
 
-  cols.num = numeric(length(cols.let))
-  for(i in 1:length(cols.let)){
-    if(length(cols.let[[i]])==1){ #simple case
-      cols.num[i] = which(LETTERS == cols.let[[i]])
-    } else { #prefix letter, base 26 counding
-      cols.num[i] = 26 * which(LETTERS == cols.let[[i]][1]) +
-        which(LETTERS == cols.let[[i]][2])
+  cols_num <- numeric(length(cols_let))
+  for (i in 1:length(cols_let)) {
+    if (length(cols_let[[i]]) == 1) { # simple case
+      cols_num[i] <- which(LETTERS == cols_let[[i]])
+    } else { # prefix letter, base 26 counding
+      cols_num[i] <- 26 * which(LETTERS == cols_let[[i]][1]) +
+        which(LETTERS == cols_let[[i]][2])
     }
   }
 
-  if(expand & length(cells) == 2){
-    res = as.data.frame(expand.grid(row = rows[1]:rows[2], col = cols.num[1]:cols.num[2]))
+  if (expand & length(cells) == 2) {
+    res <- as.data.frame(expand.grid(row = rows[1]:rows[2], col = cols_num[1]:cols_num[2]))
   } else {
-    res = data.frame(row = rows, col = cols.num)
+    res <- data.frame(row = rows, col = cols_num)
   }
 
-  if(start != "A1"){
-    offset.vals = cell_range_translate(start)
-    res$row = res$row - offset.vals$row+1
-    res$col = res$col - offset.vals$col+1
+  if (start != "A1") {
+    offset_vals <- cell_range_translate(start)
+    res$row <- res$row - offset_vals$row + 1
+    res$col <- res$col - offset_vals$col + 1
   }
   return(res)
 }

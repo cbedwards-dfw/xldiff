@@ -7,10 +7,11 @@
 diff_to_table(
   df1,
   df2,
-  digits.signif = 6,
-  proportional.diff = FALSE,
+  proportional_threshold = 0.001,
+  absolute_threshold = NULL,
+  digits_show = 6,
   dfnames = NULL,
-  excelify.col.names = FALSE
+  excelify_col_names = FALSE
 )
 }
 \arguments{
@@ -18,13 +19,15 @@ diff_to_table(
 
 \item{df2}{second dataframe or tibble}
 
-\item{digits.signif}{When comparing numeric values, what decimal do we want to round to before flagging changes? Also used to limit printing of changes? Numeric, defaults to 4.}
+\item{proportional_threshold}{Sets a threshold of proportional change below which differences should be ignored. For example, a value of 0.1 means any changes less than 10\% will not be flagged as having changed. \code{proportional_threshold} will override this value and behavior if it is provided. Numeric, defaults to 0.001 (0.1\% change).}
 
-\item{proportional.diff}{Should flagging of numeric changes be based on absolute differences or the ratio of values, sheet2/sheet? If TRUE, uses \code{digits.signif} to identify proportional threshold. \code{proportional.diff = TRUE} and \code{digits.signif}}
+\item{absolute_threshold}{Optional. Sets a threshold of absolute change below which differences should be ignored. For example, a value of 0.1 means any changes less than 0.1 will not be flagged as having changed. If provided, will override \code{proportional_threshold}. Numeric, defaults to NULL.}
+
+\item{digits_show}{When there is a change in number values, how many digits should be shown in \verb{## ---> ##}? Numeric, defaults to 6. Recommend not making this so small that flagged changes don't get printed (e.g., if this is 2 and \code{proportional_threshold} is 0.001, 0.1\% changes will get flagged, but only the first two digits will get shown).}
 
 \item{dfnames}{Character vector with names of the two dataframes to use for table title. Optional.}
 
-\item{excelify.col.names}{Should columns be identified by excel letter convention? Defaults to FALSE. Set to TRUE when comparing dataframes extracted from excel sheets.}
+\item{excelify_col_names}{Should columns be identified by excel letter convention? Defaults to FALSE. Set to TRUE when comparing dataframes extracted from excel sheets.}
 }
 \value{
 flextable object
@@ -33,9 +36,9 @@ flextable object
 Workhorse function for \code{excel_diff_table()}. Can be used to diff any pair of dataframes or tibbles. Diff is applied cell by cell, so results will only be meaningful if the shape of the two objects is the same.
 }
 \examples{
-df1 = mtcars
-df2 = mtcars
-df2[2,2] = -8
-df2[5, c(3,4)] = c(11, 15)
+df1 <- mtcars
+df2 <- mtcars
+df2[2, 2] <- -8
+df2[5, c(3, 4)] <- c(11, 15)
 diff_to_table(df1, df2)
 }
