@@ -96,89 +96,25 @@
 <div class="section level3">
 <h3 id="basic-example">Basic example<a class="anchor" aria-label="anchor" href="#basic-example"></a>
 </h3>
-<p>With our two files in hand, we can use <code>excel_diff</code> to compare them:</p>
+<p>With our two files in hand, we can use <code>excel_diff</code> to compare them. We need to specify the two files we are comparing, the name of the new file that will show the comparison, and the sheet we are comparing.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://framverse.r-universe.dev/xldiff" class="external-link">xldiff</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="reference/excel_diff.html">excel_diff</a></span><span class="op">(</span>file.1 <span class="op">=</span> <span class="st">"example-penguins-1.xlsx"</span>,</span>
-<span>          file.2 <span class="op">=</span> <span class="st">"example-penguins-2.xlsx"</span>,</span>
-<span>          results.name <span class="op">=</span> <span class="st">"penguin-file-comparison.xlsx"</span>,</span>
-<span>          sheet.name <span class="op">=</span> <span class="st">"penguins"</span></span>
+<span><span class="fu"><a href="reference/excel_diff.html">excel_diff</a></span><span class="op">(</span>file_1 <span class="op">=</span> <span class="st">"example-penguins-1.xlsx"</span>,</span>
+<span>          file_2 <span class="op">=</span> <span class="st">"example-penguins-2.xlsx"</span>,</span>
+<span>          results_name <span class="op">=</span> <span class="st">"penguin-file-comparison.xlsx"</span>,</span>
+<span>          sheet_name <span class="op">=</span> <span class="st">"penguins"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>This produces an excel file that shows and highlights changes in cells.</p>
 <p><img src="reference/figures/MAN/filev1.PNG"></p>
-</div>
-<div class="section level3">
-<h3 id="adding-formatting">Adding formatting<a class="anchor" aria-label="anchor" href="#adding-formatting"></a>
-</h3>
-<p>We already have the key results from <code>xldiff</code>: an excel file that identifies changed cells and lists the values of the first file and the second file. However, aside from the highlighting to flag changed cells, the rest of the document lacks formatting. Particularly with more complex spreadsheets (e.g. the FRAM input and outputs that <code>xldiff</code> was developed for), it can be easier to contextualize changes if the “diff” file has formatting. <code><a href="reference/excel_diff.html">excel_diff()</a></code> supports this with the optional argument <code>extra_format_fun</code>. <code>xldiff</code> uses the <code>openxlsx</code> package to handle excel file formatting, and <code>extra_format_fun</code> should be a user-created function which applies excel formatting using the functions of <code>openxlsx</code> (commonly <code>createStyle</code>, <code>addStyle</code>, <code>setColWidths</code> and <code>setRowHeights</code>). The first two arguments of <code>extra_format_fun</code> must be the workbook object and sheet name that any contained <code>openxlsx</code> functions make changes to.</p>
-<p>As a simple example, we might want to increase the font size and bold the first row (our column headers), add a thick border around the first row and the entire block of cells, and add thinner borders surrounding each individual cell in the block of non-header cells. We will also increase column widths, as otherwise cells with changes in them can become hard to read given the extra content. To facilitate applying borders to groups of cells, <code>xldiff</code> includes the function <code>add_cell_borders</code>, which takes one or more excel-style cell ranges and applies borders either around the block or within the block (depending on the value of argument <code>every.cell</code>).</p>
-<p>Here we write our formatting function. For details on how to format <code>openxlsx</code> workbooks, see the openxlsx documentation.</p>
+<p>We can also run a diff that displays in the “Viewer” section of Rstudio by using <code><a href="reference/excel_diff_table.html">excel_diff_table()</a></code>:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ycphs.github.io/openxlsx/index.html" class="external-link">openxlsx</a></span><span class="op">)</span></span>
-<span><span class="va">format_fun</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">wb</span>, <span class="va">sheet</span><span class="op">)</span><span class="op">{</span></span>
-<span>  <span class="co">## add bold and increased size for the first two rows.</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/openxlsx/man/addStyle.html" class="external-link">addStyle</a></span><span class="op">(</span><span class="va">wb</span>, <span class="va">sheet</span>,</span>
-<span>                     style <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/openxlsx/man/createStyle.html" class="external-link">createStyle</a></span><span class="op">(</span>fontSize <span class="op">=</span> <span class="fl">12</span>, textDecoration <span class="op">=</span> <span class="st">"Bold"</span><span class="op">)</span>,</span>
-<span>                     rows <span class="op">=</span> <span class="fl">1</span>, cols <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">8</span>, gridExpand <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>                     stack <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span>  <span class="co">## add thin inner cell borders</span></span>
-<span>  <span class="fu"><a href="reference/add_cell_borders.html">add_cell_borders</a></span><span class="op">(</span><span class="va">wb</span>, <span class="va">sheet</span>,</span>
-<span>                   block.ranges <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A2:H21"</span><span class="op">)</span>,</span>
-<span>                   border.thickness <span class="op">=</span> <span class="st">"thin"</span>, every.cell <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span>  <span class="co">## add thick outer borders</span></span>
-<span>  <span class="fu"><a href="reference/add_cell_borders.html">add_cell_borders</a></span><span class="op">(</span><span class="va">wb</span>, <span class="va">sheet</span>,</span>
-<span>                    block.ranges <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A1:H1"</span>, <span class="st">"A1:H21"</span><span class="op">)</span>,</span>
-<span>                   border.thickness <span class="op">=</span> <span class="st">"medium"</span><span class="op">)</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/openxlsx/man/setColWidths.html" class="external-link">setColWidths</a></span><span class="op">(</span><span class="va">wb</span>, <span class="va">sheet</span>, cols <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">8</span>, widths <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">14</span>, <span class="fl">20</span>, <span class="fl">14</span>, <span class="fl">14</span>, <span class="fl">14</span>, <span class="fl">14</span>, <span class="fl">14</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="op">}</span></span></code></pre></div>
-<p>When we call <code>excel_diff</code> with this new formatting function, our output file is prettier, and (hopefully) easier to read.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/excel_diff.html">excel_diff</a></span><span class="op">(</span>file.1 <span class="op">=</span> <span class="st">"example-penguins-1.xlsx"</span>,</span>
-<span>           file.2 <span class="op">=</span> <span class="st">"example-penguins-2.xlsx"</span>,</span>
-<span>           results.name <span class="op">=</span> <span class="st">"penguin-file-comparison2.xlsx"</span>,</span>
-<span>           sheet.name <span class="op">=</span> <span class="st">"penguins"</span>,</span>
-<span>           extra_format_fun <span class="op">=</span> <span class="va">format_fun</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="reference/excel_diff.html">excel_diff</a></span><span class="op">(</span>file_1 <span class="op">=</span> <span class="st">"example-penguins-1.xlsx"</span>,</span>
+<span>          file_2 <span class="op">=</span> <span class="st">"example-penguins-2.xlsx"</span>,</span>
+<span>          sheet_name <span class="op">=</span> <span class="st">"penguins"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/MAN/filev2.PNG"></p>
+<p><img src="reference/figures/MAN/excel_diff_table.png"></p>
 </div>
-<div class="section level3">
-<h3 id="tips-when-adding-formatting-with-extra_format_fun-">Tips when adding formatting with <code>extra_format_fun =</code>
-<a class="anchor" aria-label="anchor" href="#tips-when-adding-formatting-with-extra_format_fun-"></a>
-</h3>
-<ul>
-<li>with <code>openxlsx</code>’s <code><a href="https://rdrr.io/pkg/openxlsx/man/addStyle.html" class="external-link">addStyle()</a></code>, the optional argument <code>stack = TRUE</code> adds the specified style on top of existing styles. This can be helpful when handling complex and overlapping formatting (e.g., when specifying that an entire block has a background color, while individual cells within it are bolded, and several vertical borders split the block, you only need to specify those three types of style, not all their possible combinations).</li>
-<li>
-<code>xldiff</code> includes the helper function <code><a href="reference/cell_range_translate.html">cell_range_translate()</a></code> which takes an excel cell range (e.g. “B2:H6”) and returns a dataframe with the rows and columns of each cell in that range. This can then be fed into the <code>row</code> and <code>col</code> arguments of <code>openxlsx</code> functions.</li>
-<li>UPDATE: <code>xldiff</code> now includes <code>cell_stylize()</code>, which is a helper function that applies <code>addStyle</code> to cells based on excel cell range specifications! See below. This streamlines the process of transcribing excel formatting into R code.</li>
-<li>The cell highlighting for changed cells is added <em>after</em> the custom formatting, so setting foreground color (e.g., with <code>cell_stylize()</code>) will not interfere with this highlight.</li>
-</ul>
-</div>
-<div class="section level3">
-<h3 id="using-cells_stylize">Using <code>cells_stylize()</code>
-<a class="anchor" aria-label="anchor" href="#using-cells_stylize"></a>
-</h3>
-<p>In the example above, we increased font size and added bolding using <code>addStyle</code>. To do so, we used the following code:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span> <span class="fu"><a href="https://rdrr.io/pkg/openxlsx/man/addStyle.html" class="external-link">addStyle</a></span><span class="op">(</span><span class="va">wb</span>, <span class="va">sheet</span>,</span>
-<span>                     style <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/openxlsx/man/createStyle.html" class="external-link">createStyle</a></span><span class="op">(</span>fontSize <span class="op">=</span> <span class="fl">12</span>, textDecoration <span class="op">=</span> <span class="st">"Bold"</span><span class="op">)</span>,</span>
-<span>                     rows <span class="op">=</span> <span class="fl">1</span>, cols <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">8</span>, gridExpand <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>                     stack <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p>Here we specified the cells to change with the <code>rows</code> and <code>cols</code> arguments. In some applications, we may be looking at multiple chunks of cells that all need the same formatting. For example, in the <code>TAMMsupport</code> package, we needed to add foreground shading to more than than thirty separate rectangular sections of a worksheet. With <code>addStyle</code> we would either need a separate <code>addStyle</code> call for each section, or we would need to work out something clever to specify the rows and columns.</p>
-<p><code><a href="reference/cells_stylize.html">cells_stylize()</a></code> simplifies this process by using the <code>block.ranges</code> argument to specify cells instead of <code>rows</code> and <code>cols</code>. <code>block.ranges</code> takes a character vector (or single character string) in which each entry is an excel-style cell address or range of address (e.g. <code>c("A1", "B2:D5")</code>). It otherwise behaves the same as addStyle, except that it does not take a <code>gridExpand</code> argument, as that no longer makes sense. so to replicate the <code>addStyle</code> call above, we would use</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span> <span class="fu"><a href="reference/cells_stylize.html">cells_stylize</a></span><span class="op">(</span><span class="va">wb</span>, <span class="va">sheet</span>,</span>
-<span>                     style <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/openxlsx/man/createStyle.html" class="external-link">createStyle</a></span><span class="op">(</span>fontSize <span class="op">=</span> <span class="fl">12</span>, textDecoration <span class="op">=</span> <span class="st">"Bold"</span><span class="op">)</span>,</span>
-<span>                     block.ranges <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A1:H1"</span><span class="op">)</span>,</span>
-<span>                     stack <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p>In this simple case, it’s easy enough to use <code>addStyle</code>, but <code>cells_stylize</code> scales well when adding styles to multiple regions, and because it uses excel-style ranges, it’s much easier to write code directly based on an excel file.</p>
-</div>
-</div>
-<div class="section level2">
-<h2 id="advanced-use">Advanced use<a class="anchor" aria-label="anchor" href="#advanced-use"></a>
-</h2>
-<p>For more complicated uses, <code><a href="reference/sheet_comp.html">sheet_comp()</a></code> and <code><a href="reference/add_changed_formats.html">add_changed_formats()</a></code> provide the building blocks for writing custom scripts or functions. For example, when comparing excel files associated with the FRAM model, we (a) wanted to produce a single file comparing three scripts, (b) invert the colors for numerical changes for some ranges of cells (increased fish survival and decreased fish harvest should be highlighted the same way), and (c) round the values of some cells before comparing, as our numerical solvers often produced values that are different at the seventh or eighth decimal place, and we don’t want to highlight changes of less than a tenth of a fish. This required some additional framework that was not easily addressed in <code>excel_diff</code>, and we implemented our comparison in the <code>tamm_diff</code> function in the <code>TAMMsupport</code> package, <a href="https://github.com/cbedwards-dfw/TAMMsupport" class="external-link uri">https://github.com/cbedwards-dfw/TAMMsupport</a>.</p>
-<p>For writing your own functions, it may be useful to use <code>excel_diff</code> as a starting template. Use <code>print(excel_diff)</code> to view the underlying code.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
