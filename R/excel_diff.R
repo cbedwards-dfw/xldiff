@@ -13,6 +13,7 @@
 #' @param sheet_name_file_2 OPTIONAL. Matching sheet names to `sheet_name` but for file 2. Use only if the two files have matching sheets with different names. Defaults to NULL.
 #' @inheritParams sheet_comp
 #' @param extra_width How much extra width should be added to columns that changed? Helpful to improve readability, since changed cells have longer entries. Numeric, defaults to 0.4.
+#' @param verbose Should sheet names be listed as they are diffed? Logical, defaults to TRUE
 #'
 #' @seealso [excel_diff_table()], [excel_diff_tibble()]
 #'
@@ -35,7 +36,8 @@ excel_diff <- function(file_1, file_2, results_name, sheet_name,
                        proportional_threshold = 0.001,
                        absolute_threshold = NULL,
                        digits_show = 6,
-                       extra_width = 0.2) {
+                       verbose = FALSE,
+                       extra_width = NULL) {
   validate_character(file_1, n = 1)
   validate_character(file_2, n = 1)
   validate_character(results_name, n = 1)
@@ -49,8 +51,11 @@ excel_diff <- function(file_1, file_2, results_name, sheet_name,
   if (!is.null(sheet_name_file_2) && (!is.character(sheet_name_file_2) | length(sheet_name_file_2) == length(sheet_name))) {
     cli::cli_abort("If provided, `sheet_name_file_2` must be a character string of the same length as `sheet_name`!")
   }
+  validate_flag(verbose)
   ## thresholds validated in sheet_comp
-  validate_numeric(extra_width, n = 1, min = 0, max = 1)
+  if(!is.null(extra_width)){
+    validate_numeric(extra_width, n = 1, min = 0, max = 1)
+  }
 
   if (is.null(sheet_name_file_2)) {
     sheet_name_file_2 <- sheet_name
@@ -81,6 +86,9 @@ excel_diff <- function(file_1, file_2, results_name, sheet_name,
   }
 
   for (i.sheet in seq_along(sheet_name)) {
+    if(verbose){
+      cli::cli_alert("Diffing {sheet_name[i.sheet]}...")
+    }
     wb <- wb |>
       openxlsx2::wb_clone_sheet_style(
         from = sheet_name[i.sheet],
@@ -88,20 +96,20 @@ excel_diff <- function(file_1, file_2, results_name, sheet_name,
       )
 
     f1 <- openxlsx2::wb_to_df(wb,
-      sheet = sheet_name[i.sheet],
-      col_names = FALSE,
-      na = NA
+                              sheet = sheet_name[i.sheet],
+                              col_names = FALSE,
+                              na = NA
     )
 
     f2 <- openxlsx2::wb_to_df(wb2,
-      sheet = sheet_name_file_2[i.sheet],
-      col_names = FALSE,
-      na = NA
+                              sheet = sheet_name_file_2[i.sheet],
+                              col_names = FALSE,
+                              na = NA
     )
 
     sheet_comp <- sheet_comp(f1, f2,
-      proportional_threshold = proportional_threshold,
-      absolute_threshold = absolute_threshold
+                             proportional_threshold = proportional_threshold,
+                             absolute_threshold = absolute_threshold
     )
 
     all_dims <- dim(f1)
@@ -132,13 +140,14 @@ excel_diff <- function(file_1, file_2, results_name, sheet_name,
       )
 
     ## widen columns with corrections in them
+    if(!is.null(extra_width)){
+      cols_changed <- (apply(sheet_comp$mat_changed, 2, any))
+      col_widths <- wb_get_col_widths(wb, sheet = sheet_name[i.sheet])
+      new_widths <- col_widths$width[1:length(cols_changed)] * (1 + extra_width * cols_changed)
 
-    cols_changed <- (apply(sheet_comp$mat_changed, 2, any))
-    col_widths <- wb_get_col_widths(wb, sheet = sheet_name[i.sheet])
-    new_widths <- col_widths$width[1:length(cols_changed)] * (1 + extra_width * cols_changed)
-
-    wb_new <- wb_new |>
-      openxlsx2::wb_set_col_widths(sheet = sheet_name[i.sheet], cols = 1:length(new_widths), widths = new_widths)
+      wb_new <- wb_new |>
+        openxlsx2::wb_set_col_widths(sheet = sheet_name[i.sheet], cols = 1:length(new_widths), widths = new_widths)
+    }
   }
 
   suppressWarnings({
