@@ -74,14 +74,14 @@ sheet_comp <- function(t1, t2, proportional_threshold = 0.001, absolute_threshol
       diff_vec_nums <- comparify_nums(mat2[mat_numbers]) /
         comparify_nums(mat1[mat_numbers])
     })
-    diff_vec <- (abs(diff_vec_nums) - 1) > proportional_threshold
+    diff_vec <- abs(abs(diff_vec_nums) - 1) > proportional_threshold
     mat_diff[mat_numbers] <- diff_vec
 
     suppressWarnings({
       diff_vec_nums <- comparify_nums(gsub("%$", "", mat2)[mat_numbers_percents]) /
         comparify_nums(gsub("%$", "", mat1)[mat_numbers_percents])
     })
-    diff_vec <- (abs(diff_vec_nums) - 1) > proportional_threshold
+    diff_vec <- abs(abs(diff_vec_nums) - 1) > proportional_threshold
     mat_diff[mat_numbers_percents] <- diff_vec
 
     # handling cases when denominator is 0
@@ -89,7 +89,7 @@ sheet_comp <- function(t1, t2, proportional_threshold = 0.001, absolute_threshol
       !is.na(as.numeric(mat2)) &
       mat1 == 0)
     mat_diff[mat_denominator_zero] <-
-      as.numeric(mat2[mat_denominator_zero]) > proportional_threshold
+      abs(as.numeric(mat2[mat_denominator_zero])) > proportional_threshold
 
     ## handles cases when denominator is 0 and %s: pretend is absolute threshold
     mat_denominator_zero <-
@@ -102,8 +102,8 @@ sheet_comp <- function(t1, t2, proportional_threshold = 0.001, absolute_threshol
       abs(as.numeric(gsub("%$", "", mat2)[mat_denominator_zero])) > proportional_threshold
   } else {
     ## use absolute_threshold
-    mat_diff[mat_numbers] <- as.numeric(mat1[mat_numbers]) -
-      as.numeric(mat2[mat_numbers]) > absolute_threshold
+    mat_diff[mat_numbers] <- abs(as.numeric(mat1[mat_numbers]) -
+      as.numeric(mat2[mat_numbers])) > absolute_threshold
 
     mat_diff[mat_numbers_percents] <- suppressWarnings(
       abs(as.numeric(gsub("%$", "", mat1)[mat_numbers_percents]) -
