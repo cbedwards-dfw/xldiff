@@ -13,7 +13,8 @@ excel_diff(
   proportional_threshold = 0.001,
   absolute_threshold = NULL,
   digits_show = 6,
-  extra_width = 0.2
+  verbose = FALSE,
+  extra_width = NULL
 )
 }
 \arguments{
@@ -32,6 +33,8 @@ excel_diff(
 \item{absolute_threshold}{Optional. Sets a threshold of absolute change below which differences should be ignored. For example, a value of 0.1 means any changes less than 0.1 will not be flagged as having changed. If provided, will override \code{proportional_threshold}. Numeric, defaults to NULL.}
 
 \item{digits_show}{When there is a change in number values, how many digits should be shown in \verb{## ---> ##}? Numeric, defaults to 6. Recommend not making this so small that flagged changes don't get printed (e.g., if this is 2 and \code{proportional_threshold} is 0.001, 0.1\% changes will get flagged, but only the first two digits will get shown).}
+
+\item{verbose}{Should sheet names be listed as they are diffed? Logical, defaults to TRUE}
 
 \item{extra_width}{How much extra width should be added to columns that changed? Helpful to improve readability, since changed cells have longer entries. Numeric, defaults to 0.4.}
 }
