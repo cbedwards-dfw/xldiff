@@ -11,11 +11,15 @@
 #' @param results_name Name (including path) for file to save comparison to. Must end in ".xlsx"
 #' @param sheet_name Character string of sheet to compare. Can provide vector of character strings to produce comparisons of multiple sheets.
 #' @param sheet_name_file_2 OPTIONAL. Matching sheet names to `sheet_name` but for file 2. Use only if the two files have matching sheets with different names. Defaults to NULL.
+#' @param cell_range OPTIONAL. Character string of excel formatted range (e.g., "A1:D5"); if provided, excel_diff will only compare that range. By default, assumes cell range is the same in both files; if it differs, provide second file's cell range with argument `cell_range_2`
+#' @param cell_range_2 OPTIONAL. Like `cell_range`; only provide if (a) `cell_range` is provided, and (b) the cell range differs between the two files (e.g., the regions to compare are offset in the sheets)
 #' @inheritParams sheet_comp
 #' @param extra_width How much extra width should be added to columns that changed? Helpful to improve readability, since changed cells have longer entries. Numeric, defaults to 0.4.
 #' @param verbose Should sheet names be listed as they are diffed? Logical, defaults to TRUE
 #'
 #' @seealso [excel_diff_table()], [excel_diff_tibble()]
+#'
+#' @return Invisibly returns the number of cells that differed
 #'
 #' @export
 #'
@@ -33,6 +37,8 @@
 #' }
 excel_diff <- function(file_1, file_2, results_name, sheet_name,
                        sheet_name_file_2 = NULL,
+                       cell_range = NULL,
+                       cell_range_2 = NULL,
                        proportional_threshold = 0.001,
                        absolute_threshold = NULL,
                        digits_show = 6,
@@ -61,6 +67,20 @@ excel_diff <- function(file_1, file_2, results_name, sheet_name,
     sheet_name_file_2 <- sheet_name
   }
 
+
+  if(!is.null(cell_range_2)){
+    validate_character(cell_range_2, n = 1)
+  }
+  if(!is.null(cell_range_2) & is.null(cell_range)){
+    cli::cli_abort("Argument `cell_range_2 should only be used in conjunction with `cell_range`")
+  }
+  if(!is.null(cell_range)){
+    validate_character(cell_range, n = 1)
+    if(is.null(cell_range_2)){
+      cell_range_2 = cell_range
+    }
+  }
+
   ## The implementation here is indirect (copy sheet styles to empty sheet, cloning that to new workbook,
   ## adding in diff data)
   ## This gets around issues with excel files that have non-standard XML components,
@@ -74,6 +94,7 @@ excel_diff <- function(file_1, file_2, results_name, sheet_name,
   wb_new <- openxlsx2::wb_workbook()
 
   ## sheet validation
+  ##
   file_1_sheets <- wb |>
     openxlsx2::wb_get_sheet_names()
   file_2_sheets <- wb2 |>
@@ -85,6 +106,7 @@ excel_diff <- function(file_1, file_2, results_name, sheet_name,
     cli::cli_abort("`sheet_name` must be in each file! The following sheet names are missing from file 2: {setdiff(sheet_name_file_2, file_2_sheets)}")
   }
 
+  change_count_tracker = numeric(length(sheet_name))
   for (i.sheet in seq_along(sheet_name)) {
     if(verbose){
       cli::cli_alert("Diffing {sheet_name[i.sheet]}...")
@@ -94,18 +116,33 @@ excel_diff <- function(file_1, file_2, results_name, sheet_name,
         from = sheet_name[i.sheet],
         to = "style_storage"
       )
+    if(is.null(cell_range)){
+      f1 <- openxlsx2::wb_to_df(wb,
+                                sheet = sheet_name[i.sheet],
+                                col_names = FALSE,
+                                na = NA
+      )
 
-    f1 <- openxlsx2::wb_to_df(wb,
-                              sheet = sheet_name[i.sheet],
-                              col_names = FALSE,
-                              na = NA
-    )
+      f2 <- openxlsx2::wb_to_df(wb2,
+                                sheet = sheet_name_file_2[i.sheet],
+                                col_names = FALSE,
+                                na = NA
+      )
+    } else {
+      f1 <- openxlsx2::wb_to_df(wb,
+                                sheet = sheet_name[i.sheet],
+                                col_names = FALSE,
+                                dims = cell_range,
+                                na = NA
+      )
 
-    f2 <- openxlsx2::wb_to_df(wb2,
-                              sheet = sheet_name_file_2[i.sheet],
-                              col_names = FALSE,
-                              na = NA
-    )
+      f2 <- openxlsx2::wb_to_df(wb2,
+                                sheet = sheet_name_file_2[i.sheet],
+                                col_names = FALSE,
+                                dims = cell_range_2,
+                                na = NA
+      )
+    }
 
     sheet_comp <- sheet_comp(f1, f2,
                              proportional_threshold = proportional_threshold,
@@ -148,9 +185,16 @@ excel_diff <- function(file_1, file_2, results_name, sheet_name,
       wb_new <- wb_new |>
         openxlsx2::wb_set_col_widths(sheet = sheet_name[i.sheet], cols = 1:length(new_widths), widths = new_widths)
     }
+
+    if(verbose){
+      cli::cli_alert("Found {.emph {(sum(sheet_comp$mat_changed))}} differences.")
+    }
+
+    change_count_tracker[i.sheet] <- (sum(sheet_comp$mat_changed))
   }
 
   suppressWarnings({
     openxlsx2::wb_save(wb_new, file = results_name, overwrite = TRUE)
   })
+  return(invisible(change_count_tracker))
 }
