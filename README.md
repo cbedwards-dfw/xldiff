@@ -4,6 +4,10 @@
 # xldiff
 
 <!-- badges: start -->
+
+[![R-CMD-check](https://github.com/cbedwards-dfw/xldiff/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/cbedwards-dfw/xldiff/actions/workflows/R-CMD-check.yaml)
+[![Codecov test
+coverage](https://codecov.io/gh/cbedwards-dfw/xldiff/graph/badge.svg)](https://app.codecov.io/gh/cbedwards-dfw/xldiff)
 <!-- badges: end -->
 
 The goal of xldiff is to facilitate comparing excel sheets to look for
@@ -30,9 +34,16 @@ If you have Rtools and `{remotes}` or `{pak}` installed, you can install
 from source code like so:
 
 ``` r
-remotes::install_github("cbedwards-dfw/xldiff")
+pak::pkg_install("cbedwards-dfw/xldiff")
 #OR
-# pak::pkg_install("cbedwards-dfw/xldiff")
+remotes::install_github("cbedwards-dfw/xldiff")
+```
+
+To install the development version, which may include new features that
+have been added but not thoroughly tested:
+
+``` r
+pak::pkg_install("cbedwards-dfw/xldiff@dev")
 ```
 
 ## Example

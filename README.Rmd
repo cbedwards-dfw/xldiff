@@ -16,6 +16,8 @@ knitr::opts_chunk$set(
 # xldiff
 
 <!-- badges: start -->
+[![R-CMD-check](https://github.com/cbedwards-dfw/xldiff/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/cbedwards-dfw/xldiff/actions/workflows/R-CMD-check.yaml)
+[![Codecov test coverage](https://codecov.io/gh/cbedwards-dfw/xldiff/graph/badge.svg)](https://app.codecov.io/gh/cbedwards-dfw/xldiff)
 <!-- badges: end -->
 
 The goal of xldiff is to facilitate comparing excel sheets to look for changes, inspired by `diff` tools. `xldiff` was originally developed to help compare inputs and outputs for different runs of the FRAM salmon model, which stores both inputs and outputs in excel files. However, the comparison tools here can be used more broadly to compare different files with the same structure, for example monthly reports summarizing survey information, service use, or finances.
@@ -32,11 +34,20 @@ install.packages("xldiff", repos = "https://framverse.r-universe.dev")
 
 If you have Rtools and `{remotes}` or `{pak}` installed, you can install from source code like so:
 
-``` r
-remotes::install_github("cbedwards-dfw/xldiff")
+```r
+pak::pkg_install("cbedwards-dfw/xldiff")
 #OR
-# pak::pkg_install("cbedwards-dfw/xldiff")
+remotes::install_github("cbedwards-dfw/xldiff")
 ```
+
+To install the development version, which may include new features that have been added 
+but not thoroughly tested:
+
+```r
+pak::pkg_install("cbedwards-dfw/xldiff@dev")
+
+```
+
 
 ## Example
 

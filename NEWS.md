@@ -1,3 +1,12 @@
+# Dev version
+
+- updated `excel_diff()` to
+   - accept cell ranges to compare
+   - buffer cell ranges so that the two sheets are comparable
+   - optionally re-arrange rows to increase matchingness (address problem
+   when spacer rows are added/removed)
+   
+
 # xldiff 0.2.0
 
 - Updated `excel_diff()` to use openslxs2 package. Sheets now automatically show original formatting (except highlighting)
