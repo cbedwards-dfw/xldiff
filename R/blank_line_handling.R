@@ -7,12 +7,8 @@
 #' @param list_2 list of items, same dimensions as `list_1`
 #'
 #'
-#' @examples
-#' list_1 = as.list(c("a", "b", "10"))
-#' list_2 = as.list(c("a", "b", "11"))
-#' compare_lists(list_1, list_2)
-
-compare_lists <- function(list_1, list_2){
+compare_lists <- function(list_1,
+                          list_2){
   level_1_compare = function(x, vec_cur){
     mean(vec_cur == x)
   }
@@ -56,7 +52,8 @@ compare_lists <- function(list_1, list_2){
 #' make_cell_comparable(NA)
 #' make_cell_comparable("escapement")
 #' make_cell_comparable("13.00000000000005%")
-make_cell_comparable <- function(x, digits = 10){
+make_cell_comparable <- function(x,
+                                 digits = 10){
   validate_integer(digits, n = 1 )
   # Skip if empty or NA
   if(is.na(x) || x == "") {
@@ -78,6 +75,9 @@ make_cell_comparable <- function(x, digits = 10){
   return(x)
 }
 
+make_vec_comparable <- function(vec, digits = 10){
+  purrr::map_chr(vec, \(x){make_cell_comparable(x, digits)})
+}
 
 
 #' Converts dataframe or matrix into list
@@ -92,9 +92,14 @@ make_cell_comparable <- function(x, digits = 10){
 #' @examples
 #' listify_sheet(mtcars, direction = 1)
 #' listify_sheet(mtcars, direction = 2)
-listify_sheet <- function(df, direction, digits = 10){
+listify_sheet <- function(df,
+                          direction,
+                          digits = 10){
 
-  rlang::arg_match(direction, values = 1:2)
+  validate_integer(direction)
+  if(!direction %in% 1:2){
+    cli::cli_abort("{.arg direction} must be {.val 1} (for row-wise) or {.val 2} (for column-wise)")
+  }
   validate_integer(digits, n = 1)
 
   if(direction == 2){
@@ -136,11 +141,53 @@ listify_sheet <- function(df, direction, digits = 10){
 #' mat2[1,1] = 10
 #'
 #' make_alignment_matrix(mat1, mat2, 2)
-make_alignment_matrix <- function(df_1, df_2, direction, digits = 10){
-  rlang::arg_match(direction, values = 1:2)
+
+make_alignment_matrix <- function(df_1,
+                                  df_2,
+                                  direction,
+                                  digits = 10){
+  validate_integer(direction)
+  if(!direction %in% 1:2){
+    cli::cli_abort("{.arg direction} must be {.val 1} (for row-wise) or {.val 2} (for column-wise)")
+  }
   validate_integer(digits, n = 1)
-  list_1 <- listify_sheet(df_1, direction, digits = digits)
-  list_2 <- listify_sheet(df_2, direction, digits = digits)
+  list_1 <- listify_sheet(df_1, direction = direction, digits = digits)
+  list_2 <- listify_sheet(df_2, direction = direction, digits = digits)
   compare_lists(list_1, list_2)
 }
 
+#' Score matching-ness of two dataframes
+#'
+#' For use in handling addition/removal of blank rows.
+#'
+#' @inheritParams make_alignment_matrix
+#'
+#' @return Single numeric, with average matchedness of the two dataframes.
+#' @export
+#'
+#' @examples
+#' df2 = df1 = as.data.frame(matrix(1:10, 2, 5))
+#' ## currently: perfect match
+#' score_df_match(df1, df2)
+#' ## change one value
+#' df2[1,1] = df2[1,1] + .1
+#' score_df_match(df1, df2)
+#' ## Does the rounding work right? set digits = 0 to ignore the addition of 0.1 above
+#' score_df_match(df1, df2, digits = 0)
+#' ## If the two matrices don't match, should get value of 0
+#' score_df_match(df1, df2+.1)
+score_df_match <- function(df_1,
+                           df_2,
+                           digits = 10){
+  validate_integer(digits, n = 1)
+
+  cleaned_1 <- df_1 |>
+    as.data.frame() |>
+    dplyr::mutate(dplyr::across(dplyr::everything(), ~ make_vec_comparable(.x, digits = digits)))
+
+  cleaned_2 <- df_2 |>
+    as.data.frame() |>
+    dplyr::mutate(dplyr::across(dplyr::everything(), ~ sapply(.x, make_cell_comparable, digits = digits)))
+
+  return(mean(cleaned_1 == cleaned_2))
+}

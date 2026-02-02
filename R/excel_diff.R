@@ -14,6 +14,7 @@
 #' @param cell_range OPTIONAL. Character string of excel formatted range (e.g., "A1:D5"); if provided, excel_diff will only compare that range. By default, assumes cell range is the same in both files; if it differs, provide second file's cell range with argument `cell_range_2`
 #' @param cell_range_2 OPTIONAL. Like `cell_range`; only provide if (a) `cell_range` is provided, and (b) the cell range differs between the two files (e.g., the regions to compare are offset in the sheets)
 #' @inheritParams sheet_comp
+#' @param realign_rows Should function check if re-arranging row order of sheet in file_1 improves matchingness? Useful if one or more blank rows have been added/removed. If TRUE, row arrangement will match / align with file_2.
 #' @param extra_width How much extra width should be added to columns that changed? Helpful to improve readability, since changed cells have longer entries. Numeric, defaults to 0.4.
 #' @param verbose Should sheet names be listed as they are diffed? Logical, defaults to TRUE
 #'
@@ -35,18 +36,23 @@
 #'   sheet_name = "ER_ESC_Overview_New"
 #' )
 #' }
-excel_diff <- function(file_1, file_2, results_name, sheet_name,
+excel_diff <- function(file_1, file_2,
+                       results_name,
+                       sheet_name,
                        sheet_name_file_2 = NULL,
                        cell_range = NULL,
                        cell_range_2 = NULL,
                        proportional_threshold = 0.001,
                        absolute_threshold = NULL,
                        digits_show = 6,
+                       realign_rows = TRUE,
                        verbose = FALSE,
                        extra_width = NULL) {
+
   validate_character(file_1, n = 1)
   validate_character(file_2, n = 1)
   validate_character(results_name, n = 1)
+
   if (!all(grepl(".xls.?$", c(file_1, file_2, results_name)))) {
     cli::cli_abort("`file_1`, `file_2`, and `results_name` must end in `.xlsx` or `.xls`.")
   }
@@ -58,6 +64,7 @@ excel_diff <- function(file_1, file_2, results_name, sheet_name,
     cli::cli_abort("If provided, `sheet_name_file_2` must be a character string of the same length as `sheet_name`!")
   }
   validate_flag(verbose)
+
   ## thresholds validated in sheet_comp
   if(!is.null(extra_width)){
     validate_numeric(extra_width, n = 1, min = 0, max = 1)
@@ -69,13 +76,14 @@ excel_diff <- function(file_1, file_2, results_name, sheet_name,
 
 
   if(!is.null(cell_range_2)){
-    validate_character(cell_range_2, n = 1)
+    validate_cell_range(cell_range_2, n = 1)
   }
+
   if(!is.null(cell_range_2) & is.null(cell_range)){
     cli::cli_abort("Argument `cell_range_2 should only be used in conjunction with `cell_range`")
   }
   if(!is.null(cell_range)){
-    validate_character(cell_range, n = 1)
+    validate_cell_range(cell_range, n = 1)
     if(is.null(cell_range_2)){
       cell_range_2 = cell_range
     }
@@ -142,6 +150,16 @@ excel_diff <- function(file_1, file_2, results_name, sheet_name,
                                 dims = cell_range_2,
                                 na = NA
       )
+    }
+
+    sheets_padded <- pad_sheets(f1, f2)
+    f1 <- sheets_padded[[1]]
+    f2 <- sheets_padded[[2]]
+
+    if(realign_rows){
+      f1 <- align_rows(sheet_to_change = f1,
+                       sheet_to_match = f2,
+                       verbose = verbose)
     }
 
     sheet_comp <- sheet_comp(f1, f2,

@@ -15,8 +15,3 @@ compare_lists(list_1, list_2)
 Intended to handle lists of vectors with matching dimensions; typically these will be generated from
 \code{\link[=listify_sheet]{listify_sheet()}}. Returns a matrix where each value is the proportion of items that match.
 }
-\examples{
-list_1 = as.list(c("a", "b", "10"))
-list_2 = as.list(c("a", "b", "11"))
-compare_lists(list_1, list_2)
-}
