@@ -25,9 +25,16 @@ If you have Rtools and [remotes](https://remotes.r-lib.org) or
 code like so:
 
 ``` r
-remotes::install_github("cbedwards-dfw/xldiff")
+pak::pkg_install("cbedwards-dfw/xldiff")
 #OR
-# pak::pkg_install("cbedwards-dfw/xldiff")
+remotes::install_github("cbedwards-dfw/xldiff")
+```
+
+To install the development version, which may include new features that
+have been added but not thoroughly tested:
+
+``` r
+pak::pkg_install("cbedwards-dfw/xldiff@dev")
 ```
 
 ## Example

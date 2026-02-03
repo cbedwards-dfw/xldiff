@@ -50,7 +50,7 @@
 <div class="page-header"><h1 id="xldiff">xldiff<a class="anchor" aria-label="anchor" href="#xldiff"></a>
 </h1></div>
 <!-- badges: start -->
-<!-- badges: end -->
+
 <p>The goal of xldiff is to facilitate comparing excel sheets to look for changes, inspired by <code>diff</code> tools. <code>xldiff</code> was originally developed to help compare inputs and outputs for different runs of the FRAM salmon model, which stores both inputs and outputs in excel files. However, the comparison tools here can be used more broadly to compare different files with the same structure, for example monthly reports summarizing survey information, service use, or finances.</p>
 <p>xldiff is part of the <a href="https://framverse.r-universe.dev/packages" class="external-link">FRAMverse R-Universe</a></p>
 <div class="section level2">
@@ -61,9 +61,12 @@
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"xldiff"</span>, repos <span class="op">=</span> <span class="st">"https://framverse.r-universe.dev"</span><span class="op">)</span></span></code></pre></div>
 <p>If you have Rtools and <a href="https://remotes.r-lib.org" class="external-link">remotes</a> or <a href="https://pak.r-lib.org/" class="external-link">pak</a> installed, you can install from source code like so:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"cbedwards-dfw/xldiff"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pkg_install.html" class="external-link">pkg_install</a></span><span class="op">(</span><span class="st">"cbedwards-dfw/xldiff"</span><span class="op">)</span></span>
 <span><span class="co">#OR</span></span>
-<span><span class="co"># pak::pkg_install("cbedwards-dfw/xldiff")</span></span></code></pre></div>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"cbedwards-dfw/xldiff"</span><span class="op">)</span></span></code></pre></div>
+<p>To install the development version, which may include new features that have been added but not thoroughly tested:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pkg_install.html" class="external-link">pkg_install</a></span><span class="op">(</span><span class="st">"cbedwards-dfw/xldiff@dev"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
@@ -72,7 +75,7 @@
 <h3 id="creating-our-files">Creating our files<a class="anchor" aria-label="anchor" href="#creating-our-files"></a>
 </h3>
 <p>We can carry out simple comparisons of excel files with the <code><a href="reference/excel_diff.html">excel_diff()</a></code> function. To begin with, we must have two excel sheets that are generally similar, but for which some cells have differing values. To walk through our example, we first must create two such excel sheets. Here we use the first 20 rows of the <code>penguins</code> data in the <code>palmerpenguins</code> package (<a href="https://allisonhorst.github.io/palmerpenguins/" class="external-link uri">https://allisonhorst.github.io/palmerpenguins/</a>).</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://allisonhorst.github.io/palmerpenguins/" class="external-link">palmerpenguins</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ropensci.r-universe.dev/writexl" class="external-link">writexl</a></span><span class="op">)</span></span>
 <span></span>
@@ -97,7 +100,7 @@
 <h3 id="basic-example">Basic example<a class="anchor" aria-label="anchor" href="#basic-example"></a>
 </h3>
 <p>With our two files in hand, we can use <code>excel_diff</code> to compare them. We need to specify the two files we are comparing, the name of the new file that will show the comparison, and the sheet we are comparing.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://framverse.r-universe.dev/xldiff" class="external-link">xldiff</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="reference/excel_diff.html">excel_diff</a></span><span class="op">(</span>file_1 <span class="op">=</span> <span class="st">"example-penguins-1.xlsx"</span>,</span>
@@ -108,7 +111,7 @@
 <p>This produces an excel file that shows and highlights changes in cells.</p>
 <p><img src="reference/figures/MAN/filev1.PNG"></p>
 <p>We can also run a diff that displays in the “Viewer” section of Rstudio by using <code><a href="reference/excel_diff_table.html">excel_diff_table()</a></code>:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/excel_diff.html">excel_diff</a></span><span class="op">(</span>file_1 <span class="op">=</span> <span class="st">"example-penguins-1.xlsx"</span>,</span>
 <span>          file_2 <span class="op">=</span> <span class="st">"example-penguins-2.xlsx"</span>,</span>
 <span>          sheet_name <span class="op">=</span> <span class="st">"penguins"</span></span>
@@ -147,7 +150,13 @@
 </ul>
 </div>
 
-
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://github.com/cbedwards-dfw/xldiff/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/cbedwards-dfw/xldiff/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://app.codecov.io/gh/cbedwards-dfw/xldiff" class="external-link"><img src="https://codecov.io/gh/cbedwards-dfw/xldiff/graph/badge.svg" alt="Codecov test coverage"></a></li>
+</ul>
+</div>
 
   </aside>
 </div>
