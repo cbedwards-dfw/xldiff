@@ -45,14 +45,6 @@ sheet_comp <- function(t1, t2, proportional_threshold = 0.001, absolute_threshol
   mat1 <- as.matrix(t1)
   mat2 <- as.matrix(t2)
 
-  ## cut out extraneous NAs now
-  mat1 <- mat1[1:max(which(!apply(mat1, 1, function(x) {
-    all(is.na(x))
-  }))), ]
-  mat2 <- mat2[1:max(which(!apply(mat2, 1, function(x) {
-    all(is.na(x))
-  }))), ]
-
   ## translate NAs for better comparison
   mat1[is.na(mat1)] <- "**NA**"
   mat2[is.na(mat2)] <- "**NA**"

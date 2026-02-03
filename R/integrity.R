@@ -61,3 +61,42 @@ validate_integer <- function(x, n = NULL, ..., arg = rlang::caller_arg(x), call 
     }
   }
 }
+
+validate_cell_address <- function(x, n = NULL, ..., arg = rlang::caller_arg(x), call = rlang::caller_env()) {
+  validate_character(x, n = n, arg = arg, call = call)
+
+  pattern <- "^[A-Z]+[0-9]+$"
+  if (!all(grepl(pattern, x))) {
+    cli::cli_abort("Elements of {.arg {arg}} must be valid Excel cell addresses (e.g., 'A1', 'B10', 'AA100').",
+                   ..., call = call)
+  }
+}
+
+validate_cell_range <- function(x, n = NULL, single_cell_allowed = TRUE, ..., arg = rlang::caller_arg(x), call = rlang::caller_env()) {
+  validate_character(x, n = n, arg = arg, call = call)
+
+  pattern <- "^[A-Z]+[0-9]+:[A-Z]+[0-9]+$"
+  if(single_cell_allowed){
+    pattern = paste0(pattern, "|^[A-Z]+[0-9]+$")
+  }
+  if (!all(grepl(pattern, x))) {
+    if(single_cell_allowed){
+      cli::cli_abort("Elements of {.arg {arg}} must be valid Excel cell ranges or cell address (e.g., 'D5', 'A1:B10', 'C5:AA100').",
+                     ..., call = call)
+    } else {
+      cli::cli_abort("Elements of {.arg {arg}} must be valid Excel cell ranges (e.g., 'A1:B10', 'C5:AA100'). Single cell addresses (e.g., 'D5') are not allowed.",
+                     ..., call = call)
+    }
+  }
+}
+
+validate_excel_sheet <- function(sheet, filepath, n = NULL, ..., arg = rlang::caller_arg(sheet), call = rlang::caller_env()) {
+  validate_character(x = sheet, n = n)
+  all_sheets <- readxl::excel_sheets(filepath)
+  missing_sheets = setdiff(sheet, all_sheets)
+  if(length(missing_sheets)>0){
+    cli::cli_abort("{.arg {arg}} must contains sheets present in the excel file! {.val {missing_sheets}} not present in file. Available sheets: {.val {all_sheets}}.",
+                   ..., call = call)
+  }
+}
+

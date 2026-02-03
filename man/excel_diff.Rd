@@ -10,9 +10,12 @@ excel_diff(
   results_name,
   sheet_name,
   sheet_name_file_2 = NULL,
+  cell_range = NULL,
+  cell_range_2 = NULL,
   proportional_threshold = 0.001,
   absolute_threshold = NULL,
   digits_show = 6,
+  realign_rows = TRUE,
   verbose = FALSE,
   extra_width = NULL
 )
@@ -28,15 +31,24 @@ excel_diff(
 
 \item{sheet_name_file_2}{OPTIONAL. Matching sheet names to \code{sheet_name} but for file 2. Use only if the two files have matching sheets with different names. Defaults to NULL.}
 
+\item{cell_range}{OPTIONAL. Character string of excel formatted range (e.g., "A1:D5"); if provided, excel_diff will only compare that range. By default, assumes cell range is the same in both files; if it differs, provide second file's cell range with argument \code{cell_range_2}}
+
+\item{cell_range_2}{OPTIONAL. Like \code{cell_range}; only provide if (a) \code{cell_range} is provided, and (b) the cell range differs between the two files (e.g., the regions to compare are offset in the sheets)}
+
 \item{proportional_threshold}{Sets a threshold of proportional change below which differences should be ignored. For example, a value of 0.1 means any changes less than 10\% will not be flagged as having changed. \code{proportional_threshold} will override this value and behavior if it is provided. Numeric, defaults to 0.001 (0.1\% change).}
 
 \item{absolute_threshold}{Optional. Sets a threshold of absolute change below which differences should be ignored. For example, a value of 0.1 means any changes less than 0.1 will not be flagged as having changed. If provided, will override \code{proportional_threshold}. Numeric, defaults to NULL.}
 
 \item{digits_show}{When there is a change in number values, how many digits should be shown in \verb{## ---> ##}? Numeric, defaults to 6. Recommend not making this so small that flagged changes don't get printed (e.g., if this is 2 and \code{proportional_threshold} is 0.001, 0.1\% changes will get flagged, but only the first two digits will get shown).}
 
+\item{realign_rows}{Should function check if re-arranging row order of sheet in file_1 improves matchingness? Useful if one or more blank rows have been added/removed. If TRUE, row arrangement will match / align with file_2.}
+
 \item{verbose}{Should sheet names be listed as they are diffed? Logical, defaults to TRUE}
 
 \item{extra_width}{How much extra width should be added to columns that changed? Helpful to improve readability, since changed cells have longer entries. Numeric, defaults to 0.4.}
+}
+\value{
+Invisibly returns the number of cells that differed
 }
 \description{
 Compares a single sheet between two files, creating a new file that uses the formatting of
